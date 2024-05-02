@@ -1,0 +1,17 @@
+person:
+  - name: "Juan"
+    lastname: "De La Cruz"
+    birthyear: 2000
+    country: "Philppines"
+    hobbies:
+      - "Sleeping"
+      - "Gaming"
+      - "Coding" 
+  - name: "Pedro"
+    lastname: "Penduko"
+    birthyear: 2001
+    country: "Indonesia"
+    hobbies:
+      - "Sepak Takraw"
+      - "Swimming"
+      - "Coding" 
