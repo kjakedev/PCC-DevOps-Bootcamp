@@ -1,0 +1,27 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+    # Define Ubuntu servers
+    config.vm.define "client3" do |client3|
+      client3.vm.box = "bento/ubuntu-22.04"
+      client3.vm.network "private_network", ip: "192.1.1.10", virtualbox__intnet: "private_net2"
+      client3.vm.hostname = "client3"
+    end
+  
+    # Define pfSense firewall
+    config.vm.define "pfsense" do |pfsense|
+      pfsense.vm.guest = :freebsd
+      pfsense.vm.box = "ksklareski/pfsense-ce"
+      pfsense.vm.hostname = "pfsense"
+      pfsense.ssh.shell = 'sh'
+      pfsense.ssh.insert_key = false
+      pfsense.vm.network "private_network", ip: "192.1.1.1", virtualbox__intnet: "private_net2"
+      pfsense.vm.network "private_network", ip: "192.168.1.2", virtualbox__intnet: "private_network"
+      pfsense.vm.network "forwarded_port", guest: 80, host: 8080
+      pfsense.vm.provider "virtualbox" do |vb|
+          vb.memory = "1024"
+          vb.cpus = "1"
+      end
+    end
+  end

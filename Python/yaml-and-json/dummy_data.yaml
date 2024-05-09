@@ -15,3 +15,4 @@ person:
       - "Sepak Takraw"
       - "Swimming"
       - "Coding" 
+# {'person': [{name:"Juan", lastname:"De La Cruz"... hobbies: ["Sleeping","Gaming","Coding"]}, {name: "Pedro"..}]}

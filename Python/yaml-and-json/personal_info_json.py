@@ -4,7 +4,7 @@ import json
 with open("dummy_data.json", 'r') as f:
     config = json.load(f)
 
-# print(config)
+print(config)
 
 for person in config['person']:
     print(f"Full Name: {person['name']} {person['lastname']}" )
