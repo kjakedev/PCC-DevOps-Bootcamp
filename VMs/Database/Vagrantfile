@@ -1,0 +1,12 @@
+Vagrant.configure("2") do |config|
+  # Define Ubuntu servers
+  config.vm.define "mysql" do |mysql|
+    mysql.vm.box = "bento/ubuntu-22.04"
+    mysql.vm.hostname = "mysql"
+    mysql.vm.provider "virtualbox" do |vb|
+      vb.memory = "1024"
+      vb.cpus = "1"
+      vb.name = "mysql"
+    end
+  end
+end
