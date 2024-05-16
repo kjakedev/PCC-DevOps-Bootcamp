@@ -1,5 +1,4 @@
 var dataArray = [];
-var oldRawData
 
 displayTodo();
 
@@ -7,11 +6,10 @@ const displayTodoItems = $("#displayTodoItems");
 const displayCompleteItems = $("#displayCompleteItems");
 
 function displayTodo() {
-    fetch('/', { method: "get" }).then((response) => {
+    fetch('/getTodo', { method: "get" }).then(function (response) {
         return response.json();
-    }).then((data) => {
+    }).then(function (data) {
         dataArray = data;
-        console.log(data);
         displayItems(data);
     });
 }
@@ -19,20 +17,21 @@ function displayTodo() {
 
 function displayItems(data) {
     let htmlContent = ''
-    data.forEach((item) => {
-        console.log(item)
+    displayTodoItems.html('');
+    displayCompleteItems.html('');
+    data.forEach(function (item) {
         htmlContent = `<li><input type="checkbox" name="check" value=${item.id} /> ${item.task} </li>`
         if (item.status == 'pending'){
-            displayfromDB.append(htmlAppend(htmlContent));
+            displayTodoItems.append(htmlContent);
         } else {
-            displayCompleteItems.append(htmlAppend(htmlContent));
+            displayCompleteItems.append(htmlContent);
         }
     });
 }
 
-$('#addTask').addEventListener('click', function () {
-    const newItem = $("#newItem").value
-    const response = fetch('/addTask', {
+$('#addTask').on('click', function () {
+    const newItem = $("#newItem").val()
+    fetch('/addTask', {
         method: "POST", 
         mode: "cors",
         cache: "no-cache",
@@ -40,15 +39,17 @@ $('#addTask').addEventListener('click', function () {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(newItem),
+        body: JSON.stringify({newItem}),
       });
-      return response.json();
+      displayTodo()
     }
 );
 
-$('#completeItems').addEventListener('click', function () {
-    const itemsToComplete = $('#displayCompleteItems input[type="checkbox"]:checked')
-    const response = fetch('/completeTask', {
+$('#completeItems').on('click', function () {
+    const itemsToComplete = $('#displayTodoItems input[type="checkbox"]:checked').map(function() {
+        return $(this).val();
+      }).get();
+     fetch('/completeTask', {
         method: "POST", 
         mode: "cors",
         cache: "no-cache",
@@ -58,6 +59,7 @@ $('#completeItems').addEventListener('click', function () {
         },
         body: JSON.stringify(itemsToComplete),
       });
-      return response.json();
+      displayTodo()
     }
+    
 );

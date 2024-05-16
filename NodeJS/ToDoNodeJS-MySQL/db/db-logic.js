@@ -9,7 +9,7 @@ async function createTasksTable() {
         status VARCHAR(255) NOT NULL
       )`;
       await db.query(sql);
-      console.log('Tasks table created (if not exists)');
+      console.log('Tasks table created');
   
       // Insert dummy data (optional)
       await insertDummyData();
@@ -35,8 +35,8 @@ async function createTasksTable() {
   // Function to retrieve tasks from database
   async function getTasks() {
     try {
-      const rows = await db.query('SELECT * FROM tasks');
-      return rows;
+    const rows = await db.query('SELECT * FROM tasks')
+     return rows;
     } catch (error) {
       console.error('Error retrieving tasks:', error);
       throw error;
