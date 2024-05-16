@@ -1,0 +1,22 @@
+{
+  "name": "todonodejs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "express-handlebars": "^6.0.2",
+    "lodash": "^4.17.21",
+    "mysql": "^2.18.1",
+    "webpack": "^5.91.0",
+    "webpack-cli": "^5.1.4"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "build": "webpack"
+  },
+  "author": "",
+  "license": "ISC"
+}
