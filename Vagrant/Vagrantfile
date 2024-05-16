@@ -1,0 +1,8 @@
+Vagrant.configure("2") do |config|
+  config.vm.box = "bento/centos-stream-9"
+  config.vm.define "centos" do |centos|
+    centos.vm.provider "virtualbox" do |vb|
+      vb.name = "centos-9"
+    end
+  end
+end
