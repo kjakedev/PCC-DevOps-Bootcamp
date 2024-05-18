@@ -14,7 +14,7 @@ Vagrant.configure("2") do |config|
   config.vm.define "mongodb" do |mongodb|
     mongodb.vm.box = "ubuntu/bionic64"
     mongodb.vm.hostname = "mongodb"
-    mongodb.vm.network "forwarded_port", guest: 27107, host: 27107
+    mongodb.vm.network "forwarded_port", guest: 27107, host: 27107, host_ip: "127.0.0.1"
     mongodb.vm.provision "file", source: "./mongodb_setup.sh", destination: "/tmp/mongodb_setup.sh"
     mongodb.vm.provision "shell", inline: "mv /tmp/*.sh /opt/ && chmod +x /opt/*.sh"
     mongodb.vm.provision "shell", path: "./mongodb_setup.sh"

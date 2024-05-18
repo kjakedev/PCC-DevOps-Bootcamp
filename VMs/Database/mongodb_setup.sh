@@ -15,6 +15,8 @@ sudo apt-get update
 
 sudo apt-get install -y mongodb-org
 
+sudo sed -ie "s/127.0.0.1/::,0.0.0.0/g" /etc/mongod.conf
+
 echo "mongodb-org hold" | sudo dpkg --set-selections
 echo "mongodb-org-database hold" | sudo dpkg --set-selections
 echo "mongodb-org-server hold" | sudo dpkg --set-selections
