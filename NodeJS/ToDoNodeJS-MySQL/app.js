@@ -63,7 +63,7 @@ app.get("/getTodo", async function(req, res) {
 app.listen(3000, async function() {
   try {
     // await db.query('DROP TABLE tasks');
-    // await createTasksTable();
+    await createTasksTable();
     console.log("Server is running on port 3000");
   } catch (error) {
     console.error('Error starting server:', error);
