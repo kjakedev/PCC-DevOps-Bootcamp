@@ -1,0 +1,48 @@
+Vagrant.configure("2") do |config|
+  # Define Ubuntu servers
+  config.vm.define "mysql" do |mysql|
+    mysql.vm.box = "bigdeal/mysql57"
+    mysql.vm.hostname = "mysql"
+    mysql.vm.network "forwarded_port", guest: 3306, host: 3306
+    mysql.vm.network "private_network", ip: "192.1.1.11", virtualbox__intnet: "private_net"
+    mysql.vm.provision "shell", inline:  "mysql -u root -proot -e \"CREATE DATABASE test; CREATE USER 'test'@'%' IDENTIFIED WITH mysql_native_password BY 'test'; GRANT ALL PRIVILEGES ON *.* TO 'test'@'%';\""
+    mysql.vm.provision "shell", inline:  "mysql -u root -proot -e \"SHOW DATABASES;\""
+    mysql.vm.provider "virtualbox" do |vb|
+      vb.memory = "1024"
+      vb.cpus = "1"
+      vb.name = "mysql"
+    end
+  end
+
+  config.vm.define "nodejs" do |nodejs|
+    nodejs.vm.box = "ubuntu/focal64"
+    nodejs.vm.hostname = "nodejs"
+    nodejs.vm.network "forwarded_port", guest: 3000, host: 3000, host_ip: "127.0.0.1"
+    nodejs.vm.network "private_network", ip: "192.1.1.10", virtualbox__intnet: "private_net"
+    nodejs.vm.provision "file", source: "./nodejs_setup.sh", destination: "/tmp/nodejs_setup.sh"
+    nodejs.vm.provision "shell", inline: "mv /tmp/*.sh /opt/ && chmod +x /opt/*.sh"
+    nodejs.vm.provision "shell", privileged: false, path: "./nodejs_setup.sh"
+    nodejs.vm.provider "virtualbox" do |vb|
+      vb.memory = "2048"
+      vb.cpus = "2"
+      vb.name = "nodejs"
+    end
+  end
+
+
+  # config.vm.define "mongodb" do |mongodb|
+  #   mongodb.vm.box = "ubuntu/bionic64"
+  #   mongodb.vm.hostname = "mongodb"
+  #   mongodb.vm.network "forwarded_port", guest: 27107, host: 27107, host_ip: "127.0.0.1"
+  #   mongodb.vm.provision "file", source: "./mongodb_setup.sh", destination: "/tmp/mongodb_setup.sh"
+  #   mongodb.vm.provision "shell", inline: "mv /tmp/*.sh /opt/ && chmod +x /opt/*.sh"
+  #   mongodb.vm.provision "shell", path: "./mongodb_setup.sh"
+  #   mongodb.vm.provider "virtualbox" do |vb|
+  #     vb.memory = "2048"
+  #     vb.cpus = "2"
+  #     vb.name = "mongodb"
+  #   end
+  # end
+
+
+end
