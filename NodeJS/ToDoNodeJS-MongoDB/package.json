@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node --inspect app",
-    "build": "webpack --config webpack.config.js  && xcopy /Y /I *.html dist\\ && xcopy /S /E /Y client dist\\"
+    "build": "webpack --config webpack.config.js  && xcopy /Y /I *.html dist\\ && xcopy /S /E /Y client dist\\",
+    "build-prod": "webpack --config webpack.config.js && cp *.html dist/ && cp -r client/* dist/",
+    "serve": "node dist/bundle.js"
   },
   "author": "",
   "license": "ISC",

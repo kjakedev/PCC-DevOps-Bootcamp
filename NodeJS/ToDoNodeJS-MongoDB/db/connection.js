@@ -1,6 +1,5 @@
 require("dotenv").config();
 const MongoClient = require("mongodb").MongoClient;
-const ObjectID = require("mongodb").ObjectID;
 
 // Location of where our mongoDB database is located (use process.env)
 const url = `mongodb://${process.env.DB_URL}/${process.env.DB_NAME}?retryWrites=true&w=majority`;
