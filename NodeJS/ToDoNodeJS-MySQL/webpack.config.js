@@ -6,5 +6,8 @@ module.exports = {
     filename: `bundle.js`,
   },
   target: "node",
-  mode: "production",
+  mode: "production", 
+  optimization: {
+    minimize: false
+  }
 };
