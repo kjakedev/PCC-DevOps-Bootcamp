@@ -17,18 +17,17 @@ sudo apt install -y libvirt-dev
 
 git clone https://github.com/kjakedev/PCC-DevOps-Bootcamp.git /opt/PCC-DevOps-Bootcamp
 
-cd /opt/PCC-DevOps-Bootcamp/Python/TodoFlask-MySQL`
-sed -ie 's/localhost/192.1.1.11/g' app.py
+cd /opt/PCC-DevOps-Bootcamp/Python/TodoFlask-MySQL
+sed -i -e 's/localhost/192.1.1.11/g' app.py
 python3 -m venv venv
 source venv/bin/activate
 pip install -U pip setuptools
 pip install -r requirements.txt
+python db_create.py
 sudo cp python-todo.service /etc/systemd/system/python-todo.service
 sudo systemctl daemon-reload
 sudo systemctl start python-todo
 sudo systemctl enable python-todo
 sudo systemctl status python-todo
-export FLASK_APP=app.py
-export FLASK_ENV=development
 
 
