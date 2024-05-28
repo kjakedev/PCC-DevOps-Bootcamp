@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 User=vagrant
-Group=www—data
+Group=vagrant
 WorkingDirectory=/opt/PCC-DevOps-Bootcamp/Python/TodoFlask-MySQL
 Environment="PATH=/opt/PCC-DevOps-Bootcamp/Python/TodoFlask-MySQL/venv/bin"
 ExecStart=/opt/PCC-DevOps-Bootcamp/Python/TodoFlask-MySQL/venv/bin/gunicorn --workers 2 --bind 0.0.0.0:5000 -m 007 server:app
