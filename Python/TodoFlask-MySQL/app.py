@@ -1,10 +1,13 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
+import os
 
 app = Flask(__name__)
 
 # /// = relative path, //// = absolute path
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://test:test@localhost/test'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://test:test@localhost/test'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DB_URL", "sqlite:///db.sqlite")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
