@@ -1,0 +1,40 @@
+name: python-todo-sample
+services:
+  python-todo:
+    restart: always
+    build: ../../Python/TodoFlask-MySQL
+    # image: python-todo:v1
+    environment:
+      - DB_URL=mysql://test:test@db/test
+    depends_on:
+        db:
+          condition: service_healthy
+          restart: true
+    expose:
+      - "5000"
+  reverse-proxy:
+    image: nginx:latest
+    links:
+      - python-todo
+    volumes:
+      - ./python-todo.conf:/etc/nginx/conf.d/default.conf    
+    ports:
+      - "8080:80"
+  db:
+    image: mysql:latest
+    environment:
+      - MYSQL_ROOT_PASSWORD=test
+      - MYSQL_USER=test
+      - MYSQL_PASSWORD=test
+      - MYSQL_DATABASE=test
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+    expose:
+      - "3306"
+    volumes:
+      - db-vol:/var/lib/mysql
+volumes:
+  db-vol:
+    external: false
