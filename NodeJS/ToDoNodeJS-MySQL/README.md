@@ -32,12 +32,12 @@ npm install
 
 Step 2: Build the application by running this command
 ```bash
-npm build-prod
+npm run build-prod
 ```
 
 Step 3: Run the output build
 ```bash
-npm serve
+npm run serve
 ```
 
 > NOTE: Before running the application make sure that you have a MySQL VM or container running locally to avoid errors.
