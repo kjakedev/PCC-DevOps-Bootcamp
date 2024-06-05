@@ -23,7 +23,6 @@ python3 -m venv venv
 source venv/bin/activate
 pip install -U pip setuptools
 pip install -r requirements.txt
-python db_create.py
 sudo cp python-todo.service /etc/systemd/system/python-todo.service
 sudo systemctl daemon-reload
 sudo systemctl start python-todo

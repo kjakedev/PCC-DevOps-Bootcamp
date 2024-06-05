@@ -16,6 +16,4 @@ RUN set -xe \
 WORKDIR /opt/python-todo
 COPY . /opt/python-todo
 RUN pip install -r requirements.txt
-RUN python3 db_create.py
-
 ENTRYPOINT gunicorn -b 0.0.0.0:5000 -w 2 server:app

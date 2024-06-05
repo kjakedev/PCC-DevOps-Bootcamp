@@ -17,7 +17,6 @@ class Todo(db.Model):
     title = db.Column(db.String(100))
     complete = db.Column(db.Boolean)
 
-
 @app.route("/")
 def home():
     todo_list = Todo.query.all()
@@ -49,4 +48,9 @@ def delete(todo_id):
     return redirect(url_for("home"))
 
 if __name__ == "__main__":
+    with app.app_context():
+        db.create_all()
     app.run(debug=True)
+else: 
+    with app.app_context():
+        db.create_all()
