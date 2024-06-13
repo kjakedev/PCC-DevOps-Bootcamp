@@ -6,4 +6,4 @@ WORKDIR /opt/nodejs-todo
 RUN npm install
 RUN npm run build-prod
 
-ENTRYPOINT ["npm","run", "serve"]
+ENTRYPOINT ["npm", "run", "serve"]
