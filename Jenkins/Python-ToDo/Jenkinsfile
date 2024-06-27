@@ -12,7 +12,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                dir("${REPO_DIR}/Jenkins/Python-Todo") {
+                dir("/home/PCC-DevOps-Bootcamp") {
                     git "${REPO_URL}"
                 }
             }
