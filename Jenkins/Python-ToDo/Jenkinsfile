@@ -12,7 +12,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                dir("/home/PCC-DevOps-Bootcamp") {
+                dir("${REPO_DIR}") {
                     git "${REPO_URL}"
                 }
             }
