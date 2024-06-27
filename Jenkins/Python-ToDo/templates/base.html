@@ -22,8 +22,8 @@
         text-align: center;
       }
 
-      h1 {
-        color: {{ H1_COLOR }};
+      div > h1.ui {
+        color: {{ h1_color }} !important;
       }
     </style>
   </head>
@@ -58,7 +58,7 @@
       {% endfor %}
     </div>
     <div class="footer">
-      This application is running on container id:
+      This application is running on container/server id:
       <strong>{{container_id}}</strong>.
     </div>
   </body>
