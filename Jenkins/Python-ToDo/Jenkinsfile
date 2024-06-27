@@ -20,7 +20,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                dir("${REPO_DIR}/Jenkins/Python-Todo") {
+                dir("${REPO_DIR}/Jenkins/Python-ToDo") {
                     sh 'docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} .'
                     sh 'docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_IMAGE}:${DOCKER_LATEST_TAG}'
                 }
