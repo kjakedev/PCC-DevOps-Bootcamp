@@ -4,7 +4,7 @@ pipeline {
     environment {
         REPO_URL = 'https://github.com/kjakedev/PCC-DevOps-Bootcamp'
         REPO_DIR = '/home/ubuntu/PCC-DevOps-Bootcamp'
-        DOCKER_IMAGE = 'jevinkake/pcc-python-todo-sample-app'
+        DOCKER_IMAGE = 'kevinjake/pcc-python-todo-sample-app'
         DOCKER_TAG = "${currentBuild.number}"
         DOCKER_LATEST_TAG = 'latest'
         DOCKERHUB_CREDENTIALS_ID = 'dockerhub-credentials'
