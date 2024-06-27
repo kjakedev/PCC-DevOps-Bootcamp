@@ -22,7 +22,8 @@ class Todo(db.Model):
 def home():
     todo_list = Todo.query.all()
     container_id = socket.gethostname()
-    return render_template("base.html", todo_list=todo_list, h1_color=os.environ.get("H1_COLOR", "black"), container_id=container_id)
+    h1_color = os.environ.get("H1_COLOR", "black")
+    return render_template("base.html", todo_list=todo_list, h1_color=h1_color, container_id=container_id)
 
 
 @app.route("/add", methods=["POST"])
