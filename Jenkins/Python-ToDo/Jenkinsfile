@@ -13,7 +13,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 dir("${REPO_DIR}/Jenkins/Python-Todo") {
-                    git ${REPO_URL}
+                    git "${REPO_URL}"
                 }
             }
         }
