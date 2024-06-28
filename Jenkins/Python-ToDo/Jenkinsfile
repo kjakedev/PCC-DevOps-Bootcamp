@@ -1,0 +1,62 @@
+pipeline {
+    agent {label 'python-todo'}
+
+    environment {
+        REPO_URL = 'https://github.com/kjakedev/PCC-DevOps-Bootcamp'
+        REPO_DIR = '/home/ubuntu/PCC-DevOps-Bootcamp'
+        DOCKER_IMAGE = 'kevinjake/pcc-python-todo-sample-app'
+        DOCKER_TAG = "${currentBuild.number}"
+        DOCKER_LATEST_TAG = 'latest'
+        DOCKERHUB_CREDENTIALS_ID = 'dockerhub-credentials'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                dir("${REPO_DIR}") {
+                    git branch: 'feature/jenkins', url: "${REPO_URL}"
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                dir("${REPO_DIR}/Jenkins/Python-ToDo") {
+                    sh 'docker build -q -t ${DOCKER_IMAGE}:${DOCKER_TAG} .'
+                    sh 'docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_IMAGE}:${DOCKER_LATEST_TAG}'
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: "${DOCKERHUB_CREDENTIALS_ID}", usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
+                        sh 'echo ${DOCKERHUB_PASSWORD} | docker login -u ${DOCKERHUB_USERNAME} --password-stdin'
+                        sh 'docker push ${DOCKER_IMAGE}:${DOCKER_TAG}'
+                        sh 'docker push ${DOCKER_IMAGE}:${DOCKER_LATEST_TAG}'
+                    }
+                }
+            }
+
+        stage('Deploy to AWS EC2') {
+            steps {
+                script {
+                     sh 'docker run -p 5000:5000 -e H1_COLOR=${params.H1_COLOR} -d ${DOCKER_IMAGE}:${DOCKER_TAG}'
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Cleaning up...'
+            sh 'docker system prune -af'
+        }
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed!'
+        }
+    }
+}
