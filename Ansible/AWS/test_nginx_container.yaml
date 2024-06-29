@@ -1,0 +1,46 @@
+---
+- name: Deploy Nginx container with custom index.html
+  hosts: all
+  become: yes
+  tasks:
+    - name: Pull Nginx Docker image
+      shell: docker pull nginx:latest
+
+    - name: Stop existing mynginx container
+      shell: docker stop mynginx
+
+    - name: Remove existing mynginx container
+      shell: docker rm mynginx
+
+    - name: Run Nginx container
+      shell: docker run -d --name mynginx -p 80:80 nginx:latest
+      register: con_id
+
+    - name: Extract first 6 characters
+      set_fact:
+        container_id: "{{ con_id.stdout[0:7] }}"
+
+    # - name: container_id
+    #   debug:
+    #     msg: "{{ container_id }}"
+
+    - name: Create custom index.html file
+      copy:
+        content: |
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <title>Nginx Container</title>
+          </head>
+          <body>
+              <h1>Welcome to Nginx!</h1>
+              <p>Container ID: {{ container_id }}</p>
+          </body>
+          </html>
+        dest: /tmp/index.html
+
+    - name: Copy custom index.html to Nginx container
+      shell: docker cp /tmp/index.html mynginx:/usr/share/nginx/html/index.html
+
+    - name: Restart Nginx container
+      shell: docker restart mynginx
