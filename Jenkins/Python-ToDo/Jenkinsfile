@@ -2,7 +2,7 @@ pipeline {
     agent {label 'python-todo'}
 
     environment {
-        REPO_URL = 'git@github.com:kjakedev/PCC-DevOps-Bootcamp.git'
+        REPO_URL = 'https://github.com/kjakdev/PCC-DevOps-Bootcamp'
         REPO_DIR = '/home/ubuntu/PCC-DevOps-Bootcamp'
         DOCKER_IMAGE = 'kevinjake/pcc-python-todo-sample-app'
         DOCKER_TAG = "${currentBuild.number}"
@@ -14,7 +14,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 dir("${REPO_DIR}") {
-                    git branch: 'master', url: "${REPO_URL}"
+                    git url: "${REPO_URL}"
                     // sh "git pull --origin master"
                 }
             }
