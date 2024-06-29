@@ -1,0 +1,200 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Provision EC2 instances with VPC and subnets
+
+Parameters:
+  KeyPair:
+    Type: AWS::EC2::KeyPair::KeyName
+    Default: devops-bootcamp
+    Description: Name of an existing EC2 KeyPair to enable SSH access to the instances
+
+Resources:
+  # VPC
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      InstanceTenancy: default
+      Tags:
+        - Key: Name
+          Value: MyVPC
+
+  # Internet Gateway
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: MyInternetGateway
+
+  # Attach Internet Gateway to VPC
+  GatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref InternetGateway
+
+  # Public Subnet 1
+  PublicSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: us-east-1a
+      CidrBlock: 10.0.1.0/24
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: Public Subnet 1
+
+  # Public Subnet 2
+  PublicSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: us-east-1b
+      CidrBlock: 10.0.2.0/24
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: Public Subnet 2
+
+  # Route Table for Public Subnets
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: Public Route Table
+
+  # Route for Internet Gateway
+  PublicRoute:
+    Type: AWS::EC2::Route
+    DependsOn: GatewayAttachment
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  # Associate Subnet 1 with Route Table
+  PublicSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnet1
+      RouteTableId: !Ref PublicRouteTable
+
+  # Associate Subnet 2 with Route Table
+  PublicSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnet2
+      RouteTableId: !Ref PublicRouteTable
+
+  # Security Group
+  InstanceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: Instance Security Group
+      GroupDescription: Allow SSH and HTTP
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+      VpcId: !Ref VPC
+
+  # EC2 Instance 1 (Node.js + MongoDB)
+  NodeJSMongoDBInstance1:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-08a0d1e16fc3f61ea # Amazon Linux 2
+      InstanceType: t2.micro
+      KeyName: !Ref KeyPair
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: "true"
+          DeviceIndex: "0"
+          GroupSet:
+            - !Ref InstanceSecurityGroup
+          SubnetId: !Ref PublicSubnet1
+      Tags:
+        - Key: Name
+          Value: nodejs-mongodb-us-east-1a
+
+  # EC2 Instance 2 (Node.js + MongoDB)
+  NodeJSMongoDBInstance2:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-08a0d1e16fc3f61ea # Amazon Linux 2
+      InstanceType: t2.micro
+      KeyName: !Ref KeyPair
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: "true"
+          DeviceIndex: "0"
+          GroupSet:
+            - !Ref InstanceSecurityGroup
+          SubnetId: !Ref PublicSubnet2
+      Tags:
+        - Key: Name
+          Value: nodejs-mongodb-us-east-1b
+
+  # EC2 Instance 3 (Node.js + MySQL)
+  NodeJSMySQLInstance1:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-08a0d1e16fc3f61ea # Amazon Linux 2
+      InstanceType: t2.micro
+      KeyName: !Ref KeyPair
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: "true"
+          DeviceIndex: "0"
+          GroupSet:
+            - !Ref InstanceSecurityGroup
+          SubnetId: !Ref PublicSubnet1
+      Tags:
+        - Key: Name
+          Value: nodejs-mysql-us-east-1a
+
+  # EC2 Instance 4 (Node.js + MySQL)
+  NodeJSMySQLInstance2:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-08a0d1e16fc3f61ea # Amazon Linux 2
+      InstanceType: t2.micro
+      KeyName: !Ref KeyPair
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: "true"
+          DeviceIndex: "0"
+          GroupSet:
+            - !Ref InstanceSecurityGroup
+          SubnetId: !Ref PublicSubnet2
+      Tags:
+        - Key: Name
+          Value: nodejs-mysql-us-east-1b
+
+Outputs:
+  VPC:
+    Description: A reference to the created VPC
+    Value: !Ref VPC
+    Export:
+      Name: vpc-id
+
+  NodeJSMongoDBInstance1PublicIP:
+    Description: Public IP address of nodejs-mongodb-us-east-1a
+    Value: !GetAtt NodeJSMongoDBInstance1.PublicIp
+
+  NodeJSMongoDBInstance2PublicIP:
+    Description: Public IP address of nodejs-mongodb-us-east-1b
+    Value: !GetAtt NodeJSMongoDBInstance2.PublicIp
+
+  NodeJSMySQLInstance1PublicIP:
+    Description: Public IP address of nodejs-mysql-us-east-1a
+    Value: !GetAtt NodeJSMySQLInstance1.PublicIp
+
+  NodeJSMySQLInstance2PublicIP:
+    Description: Public IP address of nodejs-mysql-us-east-1b
+    Value: !GetAtt NodeJSMySQLInstance2.PublicIp

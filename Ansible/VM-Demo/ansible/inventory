@@ -1,0 +1,10 @@
+localhost
+
+[demo_servers]
+ansibledemo1 ansible_port=2222 ansible_ssh_private_key_file=/home/pcc-devops/PCC-DevOps-Bootcamp/Ansible/VM-Demo/.vagrant/machines/ansibledemo1/virtualbox/private_key
+ansibledemo2 ansible_port=2200 ansible_ssh_private_key_file=/home/pcc-devops/PCC-DevOps-Bootcamp/Ansible/VM-Demo/.vagrant/machines/ansibledemo2/virtualbox/private_key
+ansibledemo3 ansible_port=2201 ansible_ssh_private_key_file=/home/pcc-devops/PCC-DevOps-Bootcamp/Ansible/VM-Demo/.vagrant/machines/ansibledemo3/virtualbox/private_key
+
+[demo_servers:vars]
+ansible_host=172.28.224.1 
+ansible_user=vagrant

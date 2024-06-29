@@ -1,0 +1,28 @@
+---
+- hosts: demo_servers
+  become: true
+  tasks:
+    - name: Check current DNS Configuration
+      shell: cat /etc/resolv.conf | grep nameserver
+      register: current_nameserver
+      changed_when: false
+
+    - name: Display current_nameserver
+      debug:
+        msg: "{{ current_nameserver.stdout }}"
+
+    - name: Change DNS Server - Update resolv.conf with new DNS server
+      lineinfile:
+        path: /etc/resolv.conf
+        regexp: '^nameserver'
+        line: 'nameserver 8.8.8.8'
+        state: present
+    
+    - name: Check new DNS Configuration
+      shell: cat /etc/resolv.conf | grep nameserver
+      register: new_nameserver
+      changed_when: false
+
+    - name: Display new_nameserver
+      debug:
+        msg: "{{ new_nameserver.stdout }}"
