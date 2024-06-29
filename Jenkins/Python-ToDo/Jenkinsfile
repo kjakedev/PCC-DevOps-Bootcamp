@@ -23,7 +23,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 dir("${REPO_DIR}/Jenkins/Python-ToDo") {
-                    sh 'docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} .'
+                    sh 'docker build -q -t ${DOCKER_IMAGE}:${DOCKER_TAG} .'
                     sh 'docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_IMAGE}:${DOCKER_LATEST_TAG}'
                 }
             }
@@ -42,9 +42,18 @@ pipeline {
         stage('Deploy to AWS EC2') {
             steps {
                 script {
-                     //sh 'docker stop python-todo'
-                     //sh 'docker rm python-todo'
-                     sh 'docker run --name python-todo -p 5000:5000 -e H1_COLOR=blue -d ${DOCKER_IMAGE}:${DOCKER_TAG}'
+                    // Check if a container with the same name is running
+                    def containerName = "python-todo"
+                    def containerStatus = sh(script: "docker ps -a -q --filter 'name=${containerName}'", returnStdout: true).trim()
+
+                    if (containerStatus) {
+                        // Stop and remove the existing container
+                        sh "docker stop ${containerName}"
+                        sh "docker rm ${containerName}"
+                    }
+
+                    // Run the new container
+                    sh "docker run --name ${containerName} -p 5000:5000 -e H1_COLOR=blue -d ${DOCKER_IMAGE}:${DOCKER_TAG}"
                 }
             }
         }
