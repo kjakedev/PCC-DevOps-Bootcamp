@@ -14,7 +14,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 dir("${REPO_DIR}") {
-                    git branch: 'feature/jenkins', url: "${REPO_URL}"
+                    git branch: 'jenkins', url: "${REPO_URL}"
                 }
             }
         }

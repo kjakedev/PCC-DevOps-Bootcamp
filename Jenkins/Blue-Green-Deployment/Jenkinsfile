@@ -1,0 +1,69 @@
+pipeline {
+  parameters {
+    choice (name: 'chooseNode', choices: ['Green', 'Blue'], description: 'Choose which Environment to Deploy: ')
+  }
+  environment {
+    listenerARN = 'arn:aws:elasticloadbalancing:us-east-1:773314055569:loadbalancer/app/blue-green-alb/44fb0a862741cbe9'
+    blueARN = 'arn:aws:elasticloadbalancing:us-east-1:773314055569:targetgroup/blue-tg/21de5681eded4df7'
+    greenARN = 'arn:aws:elasticloadbalancing:us-east-1:773314055569:targetgroup/green-tg/0b600e4f126c2ca6'
+    REPO_URL = 'https://github.com/kjakedev/PCC-DevOps-Bootcamp'
+    REPO_DIR = '/home/ec2-user/PCC-DevOps-Bootcamp'
+  }
+  stages {
+    stage('Deployment Started') {
+      parallel {
+        stage('Green') {
+        agent {label 'green-tg'}
+          when {
+            expression {
+              params.chooseNode == 'Green'
+            }
+          }
+          stages {
+            stage('Offloading Green') {
+              steps {
+                sh """aws elbv2 modify-listener – listener-arn ${listenerARN} – default-actions '[{"Type": "forward","Order": 1,"ForwardConfig": {"TargetGroups": [{"TargetGroupArn": "${greenARN}", "Weight": 0 },{"TargetGroupArn": "${blueARN}", "Weight": 1 }],"TargetGroupStickinessConfig": {"Enabled": true,"DurationSeconds": 1}}}]'"""
+              }
+            }
+            stage('Checkout') {
+                steps {
+                    dir("${REPO_DIR}") {
+                        git branch: 'jenkins', url: "${REPO_URL}"
+                    }
+                }
+            }
+
+            stage('Build using docker-compose') {
+                steps {
+                    dir("${REPO_DIR}/Jenkins/Blue-Green-Deployment/blue-mysql") {
+                        sh 'docker compose -d --no-deps --build blue-nodejs-mysql'
+                    }
+                }
+            }
+        }
+        stage('Blue') {
+          agent {label 'blue-tg'}
+          when {
+            expression {
+              params.chooseNode == 'Blue'
+            }
+          }
+          stages {
+            stage('Offloading Blue') {
+              steps {
+                sh """aws elbv2 modify-listener – listener-arn ${listenerARN} – default-actions '[{"Type": "forward","Order": 1,"ForwardConfig": {"TargetGroups": [{"TargetGroupArn": "${greenARN}", "Weight": 1 },{"TargetGroupArn": "${blueARN}", "Weight": 0 }],"TargetGroupStickinessConfig": {"Enabled": true,"DurationSeconds": 1}}}]'"""
+              }
+            }
+            stage('Build using docker-compose') {
+                steps {
+                    dir("${REPO_DIR}/Jenkins/Blue-Green-Deployment/blue-mysql") {
+                        sh 'docker compose -d --no-deps --build blue-nodejs-mysql'
+                    }
+                }
+            }
+          }
+        }
+      }
+    }
+  }
+}
