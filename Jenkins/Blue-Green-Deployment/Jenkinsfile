@@ -37,27 +37,13 @@ pipeline {
               }
             }
             stage('Run on all green-tg nodes') {
-              matrix {
-                agent {
-                  label 'green-tg'
-                }
-                axes {
-                  labelExpression 'green-tg'
-                }
-                stages {
-                  stage('Checkout') {
-                    steps {
-                      dir("${REPO_DIR}") {
-                        git branch: 'jenkins', url: "${REPO_URL}"
-                      }
-                    }
+              steps {
+                node('green-tg') {
+                  dir("${REPO_DIR}") {
+                    git branch: 'jenkins', url: "${REPO_URL}"
                   }
-                  stage('Build using docker-compose') {
-                    steps {
-                      dir("${REPO_DIR}/Jenkins/Blue-Green-Deployment/green-mongo") {
-                        sh 'docker-compose -d --no-deps --build green-nodejs-mongo'
-                      }
-                    }
+                  dir("${REPO_DIR}/Jenkins/Blue-Green-Deployment/green-mongo") {
+                    sh 'docker-compose -d --no-deps --build green-nodejs-mongo'
                   }
                 }
               }
@@ -87,27 +73,13 @@ pipeline {
               }
             }
             stage('Run on all blue-tg nodes') {
-              matrix {
-                agent {
-                  label 'blue-tg'
-                }
-                axes {
-                  labelExpression 'blue-tg'
-                }
-                stages {
-                  stage('Checkout') {
-                    steps {
-                      dir("${REPO_DIR}") {
-                        git branch: 'jenkins', url: "${REPO_URL}"
-                      }
-                    }
+              steps {
+                node('blue-tg') {
+                  dir("${REPO_DIR}") {
+                    git branch: 'jenkins', url: "${REPO_URL}"
                   }
-                  stage('Build using docker-compose') {
-                    steps {
-                      dir("${REPO_DIR}/Jenkins/Blue-Green-Deployment/blue-mysql") {
-                        sh 'docker-compose -d --no-deps --build blue-nodejs-mysql'
-                      }
-                    }
+                  dir("${REPO_DIR}/Jenkins/Blue-Green-Deployment/blue-mysql") {
+                    sh 'docker-compose -d --no-deps --build blue-nodejs-mysql'
                   }
                 }
               }
