@@ -30,7 +30,6 @@ pipeline {
                         }
                         steps {
                             script {
-                                def listenerARN = NodeSelection == 'Green' ? greenARN : blueARN
                                 def weightGreen = NodeSelection == 'Green' ? 0 : 1
                                 def weightBlue = NodeSelection == 'Green' ? 1 : 0
                                 
