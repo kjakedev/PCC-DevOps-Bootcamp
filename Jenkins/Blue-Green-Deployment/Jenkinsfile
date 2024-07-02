@@ -13,7 +13,6 @@ pipeline {
   }
   stages {
     stage('Deployment Started') {
-      parallel {
         stage('Green') {
           when {
             expression {
@@ -37,21 +36,25 @@ pipeline {
               }
             }
             stage('Run on all green-tg nodes') {
-                steps {
-                    script {
-                        def nodes = nodesByLabel label: 'green-tg', offline: false
-                        for (node in nodes) {
-                            node(node.displayName) {
-                                dir("${REPO_DIR}") {
-                                    git branch: 'jenkins', url: "${REPO_URL}"
-                                }
-                                dir("${REPO_DIR}/Jenkins/Blue-Green-Deployment/green-mongo") {
-                                    sh 'docker-compose up -d --no-deps --build nodejs-todo-mongo'
-                                }
-                            }
-                        }
-                    }
-                }
+              matrix {
+                  axes {
+                      labelExpression('greenNode', 'green-tg')
+                  }
+                  stages {
+                      stage('Checkout and Build') {
+                          steps {
+                              node("${greenNode}") {
+                                  dir("${REPO_DIR}") {
+                                      git branch: 'jenkins', url: "${REPO_URL}"
+                                  }
+                                  dir("${REPO_DIR}/Jenkins/Blue-Green-Deployment/green-mongo") {
+                                      sh 'docker-compose up -d --no-deps --build nodejs-todo-mongo'
+                                  }
+                              }
+                          }
+                      }
+                  }
+              }
             }
           }
         }
@@ -78,25 +81,28 @@ pipeline {
               }
             }
             stage('Run on all blue-tg nodes') {
-                steps {
-                    script {
-                        def nodes = nodesByLabel label: 'blue-tg', offline: false
-                        for (node in nodes) {
-                            node(node.displayName) {
-                                dir("${REPO_DIR}") {
-                                    git branch: 'jenkins', url: "${REPO_URL}"
-                                }
-                                dir("${REPO_DIR}/Jenkins/Blue-Green-Deployment/blue-mysql") {
-                                    sh 'docker-compose up -d --no-deps --build nodejs-todo-mysql'
-                                }
-                            }
-                        }
-                    }
-                }
+              matrix {
+                  axes {
+                      labelExpression('blueNode', 'blue-tg')
+                  }
+                  stages {
+                      stage('Checkout and Build') {
+                          steps {
+                              node("${blueNode}") {
+                                  dir("${REPO_DIR}") {
+                                      git branch: 'jenkins', url: "${REPO_URL}"
+                                  }
+                                  dir("${REPO_DIR}/Jenkins/Blue-Green-Deployment/blue-mysql") {
+                                      sh 'docker-compose up -d --no-deps --build nodejs-todo-mysql'
+                                  }
+                              }
+                          }
+                      }
+                  }
+              }
             }
           }
         }
       }
     }
-  }
 }
