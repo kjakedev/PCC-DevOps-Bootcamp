@@ -9,18 +9,26 @@
     - name: Check if test-nginx container is running
       shell: docker ps --filter "name=test-nginx" --format "\{\{.Names\}\}"
       register: running_containers
+      tags:
+        - clean_up
 
     - name: Check if test-nginx container exists
       shell: docker ps -a --filter "name=test-nginx" --format "\{\{.Names\}\}"
       register: existing_containers
+      tags:
+        - clean_up
 
     - name: Stop running test-nginx container
       shell: docker stop test-nginx
       when: running_containers.stdout != ""
+      tags:
+        - clean_up
 
     - name: Remove existing test-nginx container
       shell: docker rm test-nginx
       when: existing_containers.stdout != ""
+      tags:
+        - clean_up
 
     - name: Run Nginx container
       shell: docker run -d --name test-nginx -p 80:80 nginx:latest
