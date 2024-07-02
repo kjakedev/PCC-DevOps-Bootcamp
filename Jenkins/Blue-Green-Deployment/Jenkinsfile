@@ -50,7 +50,8 @@ pipeline {
                     stage('Run on all nodes') {
                         steps {
                             script {
-                                def nodes = NodeSelection == 'Green' ? nodesByLabel('green-tg') : nodesByLabel('blue-tg')
+                                def selectedNodeLabel = params.chooseNode == 'Green' ? 'green-tg' : 'blue-tg'
+                                def nodes = jenkins.slaves.findAll { slave -> slave.getLabelString().contains(selectedNodeLabel) }
                                 
                                 nodes.each { nodeName ->
                                     node(nodeName) {
