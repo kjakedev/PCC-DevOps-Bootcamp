@@ -1,4 +1,5 @@
 pipeline {
+  agent any
   parameters {
     choice (name: 'chooseNode', choices: ['Green', 'Blue'], description: 'Choose which Environment to Deploy: ')
   }
