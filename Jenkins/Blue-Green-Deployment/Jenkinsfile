@@ -51,7 +51,10 @@ pipeline {
                         steps {
                             script {
                                 def selectedNodeLabel = params.chooseNode == 'Green' ? 'green-tg' : 'blue-tg'
-                                def nodes = jenkins.slaves.findAll { slave -> slave.getLabelString().contains(selectedNodeLabel) }
+                                // Find all nodes with the specified label
+                                def nodes = Jenkins.instance.nodes.findAll { node ->
+                                    node.getAssignedLabels().any { it.getName() == label }
+                                }
                                 
                                 nodes.each { nodeName ->
                                     node(nodeName) {
