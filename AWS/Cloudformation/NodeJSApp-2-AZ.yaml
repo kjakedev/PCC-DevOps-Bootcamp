@@ -18,7 +18,7 @@ Resources:
       InstanceTenancy: default
       Tags:
         - Key: Name
-          Value: MyVPC
+          Value: blue-green-vpc
 
   # Internet Gateway
   InternetGateway:
@@ -95,7 +95,7 @@ Resources:
   InstanceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupName: Instance Security Group
+      GroupName: blue-green-sg
       GroupDescription: Allow SSH and HTTP
       SecurityGroupIngress:
         - IpProtocol: tcp
@@ -107,6 +107,9 @@ Resources:
           ToPort: 80
           CidrIp: 0.0.0.0/0
       VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: blue-green-sg
 
   # EC2 Instance 1 (Node.js + MongoDB)
   NodeJSMongoDBInstance1:
