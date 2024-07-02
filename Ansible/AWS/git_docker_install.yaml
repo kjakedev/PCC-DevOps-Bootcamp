@@ -1,0 +1,41 @@
+- hosts: all
+  become: true
+
+  tasks:
+    - name: Install Git and Docker
+      yum:
+        name:
+          - git
+          - docker
+        state: present
+
+    - name: Start Docker service
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Add ec2-user to Docker group
+      user:
+        name: ec2-user
+        groups: docker
+        append: yes
+
+    - name: Configure Git user name
+      git_config:
+        name: user.name
+        value: "Your Name"
+
+    - name: Configure Git user email
+      git_config:
+        name: user.email
+        value: "your.email@example.com"
+
+    - name: Clone Git repository
+      become_user: ec2-user
+      git:
+        repo: https://github.com/kjakedev/PCC-DevOps-Bootcamp.git
+        dest: /home/ec2-user/PCC-DevOps-Bootcamp
+        force: yes
+      tags:
+        - update_git

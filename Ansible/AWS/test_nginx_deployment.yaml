@@ -1,0 +1,48 @@
+---
+- name: Deploy Nginx container with custom index.html
+  hosts: all
+  become: yes
+  tasks:
+    - name: Pull Nginx Docker image
+      shell: docker pull nginx:latest
+
+    - name: Check if test-nginx container is running
+      shell: docker ps --filter "name=test-nginx" --format "\{\{.Names\}\}"
+      register: running_containers
+
+    - name: Check if test-nginx container exists
+      shell: docker ps -a --filter "name=test-nginx" --format "\{\{.Names\}\}"
+      register: existing_containers
+
+    - name: Stop running test-nginx container
+      shell: docker stop test-nginx
+      when: running_containers.stdout != ""
+
+    - name: Remove existing test-nginx container
+      shell: docker rm test-nginx
+      when: existing_containers.stdout != ""
+
+    - name: Run Nginx container
+      shell: docker run -d --name test-nginx -p 80:80 nginx:latest
+      register: nginx_container_id
+
+    - name: Create custom index.html file
+      copy:
+        content: |
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <title>Nginx Container</title>
+          </head>
+          <body>
+              <h1>Welcome to Nginx!</h1>
+              <p>Container ID: {{ nginx_container_id.stdout }}</p>
+          </body>
+          </html>
+        dest: /tmp/index.html
+
+    - name: Copy custom index.html to Nginx container
+      shell: docker cp /tmp/index.html test-nginx:/usr/share/nginx/html/index.html
+
+    - name: Restart Nginx container
+      shell: docker restart test-nginx
