@@ -4,7 +4,7 @@ pipeline {
     choice (name: 'chooseNode', choices: ['Green', 'Blue'], description: 'Choose which Environment to Deploy: ')
   }
   environment {
-    listenerARN = 'arn:aws:elasticloadbalancing:us-east-1:773314055569:loadbalancer/app/blue-green-alb/e66a44af6d7d6725'
+    listenerARN = 'arn:aws:elasticloadbalancing:us-east-1:773314055569:listener/app/blue-green-alb/e66a44af6d7d6725/7cb9646d02d73693'
     blueARN = 'arn:aws:elasticloadbalancing:us-east-1:773314055569:targetgroup/blue-tg/fda570ba9fa0ba4b'
     greenARN = 'arn:aws:elasticloadbalancing:us-east-1:773314055569:targetgroup/green-tg/e41e1918562904c9'
     REPO_URL = 'https://github.com/kjakedev/PCC-DevOps-Bootcamp'
