@@ -44,21 +44,27 @@ pipeline {
                         axes {
                             axis {
                                 name 'NodeLabel'
-                                values params.chooseNode == 'Green' ? 'green-tg' : 'blue-tg'
+                                values 'green-tg', 'blue-tg'
                             }
                         }
                         stages {
                             stage('Checkout and Build') {
+                                when {
+                                    expression {
+                                        (params.chooseNode == 'Green' && NodeLabel == 'green-tg') || 
+                                        (params.chooseNode == 'Blue' && NodeLabel == 'blue-tg')
+                                    }
+                                }
                                 steps {
                                     script {
-                                        def directory = params.chooseNode == 'Green' ? 'green-mongo':'blue-mysql'
-                                        def composeName = params.chooseNode == 'Green' ? 'nodejs-todo-mongo':'nodejs-todo-mysql'
                                         node("${NodeLabel}") {
                                             dir("${REPO_DIR}") {
                                                 git branch: 'jenkins', url: "${REPO_URL}"
                                             }
-                                            dir("${REPO_DIR}/Jenkins/Blue-Green-Deployment/${directory}") {
-                                                sh 'docker-compose up -d --no-deps --build ${composeName}'
+                                            def subDir = params.chooseNode.toLowerCase() == 'green' ? 'green-mongo' : 'blue-mysql'
+                                            def serviceName = params.chooseNode.toLowerCase() == 'green' ? 'nodejs-todo-mongo' : 'nodejs-todo-mysql'
+                                            dir("${REPO_DIR}/Jenkins/Blue-Green-Deployment/${subDir}") {
+                                                sh "docker-compose up -d --no-deps --build ${serviceName}"
                                             }
                                         }
                                     }
