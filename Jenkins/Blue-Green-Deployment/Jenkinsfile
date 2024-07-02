@@ -9,12 +9,12 @@ pipeline {
     greenARN = 'arn:aws:elasticloadbalancing:us-east-1:773314055569:targetgroup/green-tg/e41e1918562904c9'
     REPO_URL = 'https://github.com/kjakedev/PCC-DevOps-Bootcamp'
     REPO_DIR = '/home/ec2-user/PCC-DevOps-Bootcamp'
+    AWS_CREDENTIALS_ID = 'aws-credentials'
   }
   stages {
     stage('Deployment Started') {
       parallel {
         stage('Green') {
-        agent {label 'green-tg'}
           when {
             expression {
               params.chooseNode == 'Green'
@@ -23,28 +23,39 @@ pipeline {
           stages {
             stage('Offloading Green') {
               steps {
-                sh """aws elbv2 modify-listener --listener-arn ${listenerARN} --default-actions '[{"Type": "forward","Order": 1,"ForwardConfig": {"TargetGroups": [{"TargetGroupArn": "${greenARN}", "Weight": 0 },{"TargetGroupArn": "${blueARN}", "Weight": 1 }],"TargetGroupStickinessConfig": {"Enabled": true,"DurationSeconds": 1}}}]'"""
+                withCredentials([usernamePassword(credentialsId: "${AWS_CREDENTIALS_ID}", usernameVariable: 'AWS_ACCESS_KEY', passwordVariable: 'AWS_SECRET_KEY')])
+                sh """AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_KEY} aws elbv2 modify-listener --listener-arn ${listenerARN} --default-actions '[{"Type": "forward","Order": 1,"ForwardConfig": {"TargetGroups": [{"TargetGroupArn": "${greenARN}", "Weight": 0 },{"TargetGroupArn": "${blueARN}", "Weight": 1 }],"TargetGroupStickinessConfig": {"Enabled": true,"DurationSeconds": 1}}}]'"""
               }
             }
-            stage('Checkout') {
-                steps {
-                    dir("${REPO_DIR}") {
-                        git branch: 'jenkins', url: "${REPO_URL}"
+            stage('Run on all green-tg nodes') {
+                matrix {
+                    agent {
+                        label 'green-tg'
                     }
-                }
-            }
-
-            stage('Build using docker-compose') {
-                steps {
-                    dir("${REPO_DIR}/Jenkins/Blue-Green-Deployment/blue-mysql") {
-                        sh 'docker compose -d --no-deps --build blue-nodejs-mysql'
+                    axes {
+                        labelExpression 'green-tg'
+                    }
+                    stages {
+                      stage('Checkout') {
+                          steps {
+                              dir("${REPO_DIR}") {
+                                  git branch: 'jenkins', url: "${REPO_URL}"
+                              }
+                          }
+                      }
+                      stage('Build using docker-compose') {
+                          steps {
+                              dir("${REPO_DIR}/Jenkins/Blue-Green-Deployment/green-mongo") {
+                                  sh 'docker compose -d --no-deps --build green-nodejs-mongo'
+                              }
+                          }
+                      }
                     }
                 }
             }
         }
       }
         stage('Blue') {
-          agent {label 'blue-tg'}
           when {
             expression {
               params.chooseNode == 'Blue'
@@ -53,13 +64,32 @@ pipeline {
           stages {
             stage('Offloading Blue') {
               steps {
-                sh """aws elbv2 modify-listener --listener-arn ${listenerARN} --default-actions '[{"Type": "forward","Order": 1,"ForwardConfig": {"TargetGroups": [{"TargetGroupArn": "${greenARN}", "Weight": 1 },{"TargetGroupArn": "${blueARN}", "Weight": 0 }],"TargetGroupStickinessConfig": {"Enabled": true,"DurationSeconds": 1}}}]'"""
+                sh """AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_KEY} aws elbv2 modify-listener --listener-arn ${listenerARN} --default-actions '[{"Type": "forward","Order": 1,"ForwardConfig": {"TargetGroups": [{"TargetGroupArn": "${greenARN}", "Weight": 1 },{"TargetGroupArn": "${blueARN}", "Weight": 0 }],"TargetGroupStickinessConfig": {"Enabled": true,"DurationSeconds": 1}}}]'"""
               }
             }
-            stage('Build using docker-compose') {
-                steps {
-                    dir("${REPO_DIR}/Jenkins/Blue-Green-Deployment/blue-mysql") {
-                        sh 'docker compose -d --no-deps --build blue-nodejs-mysql'
+            stage('Run on all blue-tg nodes') {
+                matrix {
+                    agent {
+                        label 'blue-tg'
+                    }
+                    axes {
+                        labelExpression 'blue-tg'
+                    }
+                    stages {
+                      stage('Checkout') {
+                          steps {
+                              dir("${REPO_DIR}") {
+                                  git branch: 'jenkins', url: "${REPO_URL}"
+                              }
+                          }
+                      }
+                      stage('Build using docker-compose') {
+                          steps {
+                              dir("${REPO_DIR}/Jenkins/Blue-Green-Deployment/blue-mysql") {
+                                  sh 'docker compose -d --no-deps --build blue-nodejs-mysql'
+                              }
+                          }
+                      }
                     }
                 }
             }
