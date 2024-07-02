@@ -37,23 +37,21 @@ pipeline {
               }
             }
             stage('Run on all green-tg nodes') {
-              steps {
-                node('green-tg') {
-                  script {
-                    def nodes = Jenkins.instance.getLabel('green-tg').getNodes()
-                    for (node in nodes) {
-                      node.getNodeName() {
-                        dir("${REPO_DIR}") {
-                          git branch: 'jenkins', url: "${REPO_URL}"
+                steps {
+                    script {
+                        def nodes = nodesByLabel label: 'green-tg', offline: false
+                        for (node in nodes) {
+                            node(node.displayName) {
+                                dir("${REPO_DIR}") {
+                                    git branch: 'jenkins', url: "${REPO_URL}"
+                                }
+                                dir("${REPO_DIR}/Jenkins/Blue-Green-Deployment/green-mongo") {
+                                    sh 'docker-compose up -d --no-deps --build nodejs-todo-mongo'
+                                }
+                            }
                         }
-                        dir("${REPO_DIR}/Jenkins/Blue-Green-Deployment/green-mongo") {
-                          sh 'docker-compose up -d --no-deps --build nodejs-todo-mongo'
-                        }
-                      }
                     }
-                  }
                 }
-              }
             }
           }
         }
@@ -80,23 +78,21 @@ pipeline {
               }
             }
             stage('Run on all blue-tg nodes') {
-              steps {
-                node('blue-tg') {
-                  script {
-                    def nodes = Jenkins.instance.getLabel('blue-tg').getNodes()
-                    for (node in nodes) {
-                      node.getNodeName() {
-                        dir("${REPO_DIR}") {
-                          git branch: 'jenkins', url: "${REPO_URL}"
+                steps {
+                    script {
+                        def nodes = nodesByLabel label: 'blue-tg', offline: false
+                        for (node in nodes) {
+                            node(node.displayName) {
+                                dir("${REPO_DIR}") {
+                                    git branch: 'jenkins', url: "${REPO_URL}"
+                                }
+                                dir("${REPO_DIR}/Jenkins/Blue-Green-Deployment/blue-mysql") {
+                                    sh 'docker-compose up -d --no-deps --build nodejs-todo-mysql'
+                                }
+                            }
                         }
-                        dir("${REPO_DIR}/Jenkins/Blue-Green-Deployment/blue-mysql") {
-                          sh 'docker-compose up -d --no-deps --build nodejs-todo-mysql'
-                        }
-                      }
                     }
-                  }
                 }
-              }
             }
           }
         }
