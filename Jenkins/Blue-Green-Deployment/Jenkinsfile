@@ -26,8 +26,8 @@ pipeline {
                 withCredentials([
                   usernamePassword(
                     credentialsId: "${AWS_CREDENTIALS_ID}",
-                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                    usernameVariable: 'AWS_ACCESS_KEY_ID',
+                    passwordVariable: 'AWS_SECRET_ACCESS_KEY'
                   )
                 ]) {
                   sh """
@@ -62,8 +62,8 @@ pipeline {
                 withCredentials([
                   usernamePassword(
                     credentialsId: "${AWS_CREDENTIALS_ID}",
-                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                    usernameVariable: 'AWS_ACCESS_KEY_ID',
+                    passwordVariable: 'AWS_SECRET_ACCESS_KEY'
                   )
                 ]) {
                   sh """
