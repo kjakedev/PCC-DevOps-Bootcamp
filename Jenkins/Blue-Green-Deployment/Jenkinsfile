@@ -11,62 +11,29 @@ pipeline {
     REPO_DIR = '/home/ec2-user/PCC-DevOps-Bootcamp'
     AWS_CREDENTIALS_ID = 'aws-credentials'
   }
-   stages {
+    stages {
         stage('Deployment Started') {
-                stage('Green') {
-                    when {
-                        expression {
-                            params.chooseNode == 'Green'
-                        }
-                    }
-                    stages {
-                        stage('Offloading Green') {
-                            steps {
-                                withCredentials([
-                                    usernamePassword(
-                                        credentialsId: "${AWS_CREDENTIALS_ID}",
-                                        usernameVariable: 'AWS_ACCESS_KEY_ID',
-                                        passwordVariable: 'AWS_SECRET_ACCESS_KEY'
-                                    )
-                                ]) {
-                                    sh """
-                                        AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} aws elbv2 modify-listener --listener-arn ${listenerARN} --default-actions '[{"Type": "forward","Order": 1,"ForwardConfig": {"TargetGroups": [{"TargetGroupArn": "${greenARN}", "Weight": 0 },{"TargetGroupArn": "${blueARN}", "Weight": 1 }],"TargetGroupStickinessConfig": {"Enabled": true,"DurationSeconds": 1}}}]'
-                                    """
-                                }
-                            }
-                        }
-                        stage('Run on all green-tg nodes') {
-                            matrix {
-                                axes {
-                                    labelExpression('greenNode', 'green-tg')
-                                }
-                                stages {
-                                    stage('Checkout and Build') {
-                                        steps {
-                                            node("${greenNode}") {
-                                                dir("${REPO_DIR}") {
-                                                    git branch: 'jenkins', url: "${REPO_URL}"
-                                                }
-                                                dir("${REPO_DIR}/Jenkins/Blue-Green-Deployment/green-mongo") {
-                                                    sh 'docker-compose up -d --no-deps --build nodejs-todo-mongo'
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
+            matrix {
+                axes {
+                    axis {
+                        name 'NodeSelection'
+                        values 'Green', 'Blue'
                     }
                 }
-                stage('Blue') {
-                    when {
-                        expression {
-                            params.chooseNode == 'Blue'
+                stages {
+                    stage('Configure Listener') {
+                        when {
+                            expression {
+                                params.chooseNode == 'Green' && NodeSelection == 'Green' ||
+                                params.chooseNode == 'Blue' && NodeSelection == 'Blue'
+                            }
                         }
-                    }
-                    stages {
-                        stage('Offloading Blue') {
-                            steps {
+                        steps {
+                            script {
+                                def listenerARN = NodeSelection == 'Green' ? greenARN : blueARN
+                                def weightGreen = NodeSelection == 'Green' ? 0 : 1
+                                def weightBlue = NodeSelection == 'Green' ? 1 : 0
+                                
                                 withCredentials([
                                     usernamePassword(
                                         credentialsId: "${AWS_CREDENTIALS_ID}",
@@ -75,27 +42,22 @@ pipeline {
                                     )
                                 ]) {
                                     sh """
-                                        AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} aws elbv2 modify-listener --listener-arn ${listenerARN} --default-actions '[{"Type": "forward","Order": 1,"ForwardConfig": {"TargetGroups": [{"TargetGroupArn": "${greenARN}", "Weight": 1 },{"TargetGroupArn": "${blueARN}", "Weight": 0 }],"TargetGroupStickinessConfig": {"Enabled": true,"DurationSeconds": 1}}}]'
+                                        AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} aws elbv2 modify-listener --listener-arn ${listenerARN} --default-actions '[{"Type": "forward","Order": 1,"ForwardConfig": {"TargetGroups": [{"TargetGroupArn": "${greenARN}", "Weight": ${weightGreen} },{"TargetGroupArn": "${blueARN}", "Weight": ${weightBlue} }],"TargetGroupStickinessConfig": {"Enabled": true,"DurationSeconds": 1}}}]'
                                     """
                                 }
                             }
                         }
-                        stage('Run on all blue-tg nodes') {
-                            matrix {
-                                axes {
-                                    labelExpression('blueNode', 'blue-tg')
-                                }
-                                stages {
-                                    stage('Checkout and Build') {
-                                        steps {
-                                            node("${blueNode}") {
-                                                dir("${REPO_DIR}") {
-                                                    git branch: 'jenkins', url: "${REPO_URL}"
-                                                }
-                                                dir("${REPO_DIR}/Jenkins/Blue-Green-Deployment/blue-mysql") {
-                                                    sh 'docker-compose up -d --no-deps --build nodejs-todo-mysql'
-                                                }
-                                            }
+                    }
+                    stage('Run on all nodes') {
+                        steps {
+                            script {
+                                def nodes = NodeSelection == 'Green' ? nodesByLabel('green-tg') : nodesByLabel('blue-tg')
+                                
+                                nodes.each { nodeName ->
+                                    node(nodeName) {
+                                        checkout([$class: 'GitSCM', branches: [[name: '*/jenkins']], userRemoteConfigs: [[url: "${REPO_URL}"]]])
+                                        dir("${REPO_DIR}/Jenkins/Blue-Green-Deployment/${NodeSelection.toLowerCase()}-mongo") {
+                                            sh 'docker-compose up -d --no-deps --build nodejs-todo-mongo'
                                         }
                                     }
                                 }
@@ -105,4 +67,5 @@ pipeline {
                 }
             }
         }
+    }
 }
