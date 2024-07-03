@@ -5,7 +5,6 @@
   tasks:
     - name: Set service name and target group based on host_group
       set_fact:
-        service_name: "{{ 'nodejs-todo-mongo' if host_group == 'green_tg' else 'nodejs-todo-mysql' }}"
         docker_compose_path: "{{ '/home/ec2-user/PCC-DevOps-Bootcamp/Jenkins/Blue-Green-Deployment/green-mongo' if host_group == 'green_tg' else '/home/ec2-user/PCC-DevOps-Bootcamp/Jenkins/Blue-Green-Deployment/blue-mysql' }}"
 
     - name: Update the repository
@@ -22,6 +21,6 @@
         chdir: /home/ec2-user/PCC-DevOps-Bootcamp
 
     - name: Run docker-compose up with build
-      shell: docker-compose up -d --no-deps --build {{ service_name }}
+      shell: docker-compose up -d --no-deps --build
       args:
         chdir: "{{ docker_compose_path }}"
