@@ -1,0 +1,18 @@
+[aws_nodejs_ec2]
+nodejs-mysql-us-east-1a ansible_host=54.242.12.78
+nodejs-mysql-us-east-1b ansible_host=3.239.34.108
+nodejs-mongodb-us-east-1a ansible_host=35.175.211.216
+nodejs-mongodb-us-east-1b ansible_host=44.200.235.252
+
+[blue_tg]
+nodejs-mysql-us-east-1a ansible_host=54.242.12.78
+nodejs-mysql-us-east-1b ansible_host=3.239.34.108
+
+[green_tg]
+nodejs-mongodb-us-east-1a ansible_host=35.175.211.216
+nodejs-mongodb-us-east-1b ansible_host=44.200.235.252
+
+[aws_nodejs_ec2:vars]
+# ansible_ssh_private_key_file=<path of your private key>
+ansible_ssh_private_key_file=~/devops-bootcamp.pem
+ansible_user=ec2-user

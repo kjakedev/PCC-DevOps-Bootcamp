@@ -1,0 +1,17 @@
+---
+- name: Run docker-compose up based on host group
+  hosts: "{{ host_group }}"
+  become: true
+
+  tasks:
+  - name: Set service name and target group based on host_group
+    set_fact:
+      service_name: "{{ 'nodejs-todo-mongo' if host_group == 'green_tg' else 'nodejs-todo-mysql' }}"
+      docker_compose_path: "{{ '/home/ec2-user/PCC-DevOps-Bootcamp/Jenkins/Blue-Green-Deployment/green-mongo' if host_group == 'green_tg' else '/home/ec2-user/PCC-DevOps-Bootcamp/Jenkins/Blue-Green-Deployment/blue-mysql' }}"
+
+  - name: Run docker-compose up with build
+      command: docker-compose up -d --no-deps --build {{ service_name }}
+      args:
+        chdir: "{{ docker_compose_path }}"
+
+  when: host_group in ["green_tg", "blue_tg"]
