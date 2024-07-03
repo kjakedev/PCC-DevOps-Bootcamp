@@ -14,6 +14,13 @@
         dest: /home/ec2-user/PCC-DevOps-Bootcamp
         refspec: "+refs/heads/jenkins:refs/remotes/origin/jenkins"
 
+    - name: Checkout to the jenkins branch
+      shell: |
+        git checkout jenkins
+        git reset --hard origin/jenkins
+      args:
+        chdir: /home/ec2-user/PCC-DevOps-Bootcamp
+
     - name: Run docker-compose up with build
       shell: docker-compose up -d --no-deps --build {{ service_name }}
       args:
