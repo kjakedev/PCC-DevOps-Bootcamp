@@ -1,16 +1,16 @@
 [aws_nodejs_ec2]
-nodejs-mysql-us-east-1a ansible_host=54.242.12.78
-nodejs-mysql-us-east-1b ansible_host=3.239.34.108
-nodejs-mongodb-us-east-1a ansible_host=35.175.211.216
-nodejs-mongodb-us-east-1b ansible_host=44.200.235.252
+nodejs-mysql-us-east-1a ansible_host=54.198.236.49
+nodejs-mysql-us-east-1b ansible_host=44.222.219.59
+nodejs-mongodb-us-east-1a ansible_host=18.209.174.86
+nodejs-mongodb-us-east-1b ansible_host=3.238.69.127
 
 [blue_tg]
-nodejs-mysql-us-east-1a ansible_host=54.242.12.78
-nodejs-mysql-us-east-1b ansible_host=3.239.34.108
+nodejs-mysql-us-east-1a ansible_host=54.198.236.49
+nodejs-mysql-us-east-1b ansible_host=44.222.219.59
 
 [green_tg]
-nodejs-mongodb-us-east-1a ansible_host=35.175.211.216
-nodejs-mongodb-us-east-1b ansible_host=44.200.235.252
+nodejs-mongodb-us-east-1a ansible_host=18.209.174.86
+nodejs-mongodb-us-east-1b ansible_host=3.238.69.127
 
 [aws_nodejs_ec2:vars]
 # ansible_ssh_private_key_file=<path of your private key>

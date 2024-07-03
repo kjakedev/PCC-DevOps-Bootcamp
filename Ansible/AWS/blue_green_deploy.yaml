@@ -20,7 +20,7 @@
       args:
         chdir: /home/ec2-user/PCC-DevOps-Bootcamp
 
-    - name: Run docker-compose up with build
+    - name: Run docker-compose down
       shell: docker-compose down
       args:
         chdir: "{{ docker_compose_path }}"
