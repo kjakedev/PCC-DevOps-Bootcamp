@@ -1,6 +1,5 @@
 ---
-- name: Run docker-compose up based on host group
-  hosts: "{{ host_group }}"
+- hosts: "{{ host_group }}"
   become: true
 
   tasks:
@@ -13,5 +12,3 @@
       shell: docker-compose up -d --no-deps --build {{ service_name }}
       args:
         chdir: "{{ docker_compose_path }}"
-
-  when: host_group in ["green_tg", "blue_tg"]
