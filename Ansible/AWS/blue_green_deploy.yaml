@@ -12,7 +12,7 @@
       git:
         repo: "{{ GITHUB_REPO }}"
         dest: /home/ec2-user/PCC-DevOps-Bootcamp
-        refspec: "+refs/pull/*:jenkins"
+        refspec: "+refs/heads/jenkins:refs/remotes/origin/jenkins"
 
     - name: Run docker-compose up with build
       shell: docker-compose up -d --no-deps --build {{ service_name }}
