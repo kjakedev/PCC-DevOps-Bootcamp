@@ -8,7 +8,7 @@ pipeline {
     blueARN = 'arn:aws:elasticloadbalancing:us-east-1:773314055569:targetgroup/blue-tg/fda570ba9fa0ba4b'
     greenARN = 'arn:aws:elasticloadbalancing:us-east-1:773314055569:targetgroup/green-tg/e41e1918562904c9'
     REPO_URL = 'https://github.com/kjakedev/PCC-DevOps-Bootcamp'
-    REPO_DIR = '/home/ec2-user/PCC-DevOps-Bootcamp'
+    REPO_DIR = '/tmp/PCC-DevOps-Bootcamp'
     AWS_CREDENTIALS_ID = 'aws-credentials'
   }
   stages {
@@ -39,10 +39,13 @@ pipeline {
             stage('Run on all green-tg nodes') {
               steps {
                   dir("${REPO_DIR}") {
-                    sh 'git checkout jenkins && git pull'
+                    git branch: 'jenkins', url: "${REPO_URL}"
                   }
                   dir("${REPO_DIR}/Ansible/AWS") {
-                    sh 'ansible-playbook docker-compose_up_nodejs.yml -e host_group=green_tg'
+                    sh '''
+                        su - ec2-user -c "ansible-playbook -i inventory blue_green_deploy.yml \
+                            --extra-vars 'host_group=green_tg'"
+                    '''
                   }
               }
             }
@@ -73,10 +76,13 @@ pipeline {
             stage('Run on all blue-tg nodes') {
               steps {
                   dir("${REPO_DIR}") {
-                    sh 'git checkout jenkins && git pull'
+                    git branch: 'jenkins', url: "${REPO_URL}"
                   }
                   dir("${REPO_DIR}/Ansible/AWS") {
-                    sh 'ansible-playbook docker-compose_up_nodejs.yml -e host_group=blue_tg'
+                    sh '''
+                        su - ec2-user -c "ansible-playbook -i inventory blue_green_deploy.yml \
+                            --extra-vars 'host_group=blue_tg'"
+                    '''
                   }
               }
             }
