@@ -39,7 +39,7 @@ pipeline {
             stage('Run on all green-tg nodes') {
               steps {
                   dir("${REPO_DIR}") {
-                    git branch: 'jenkins', url: "${REPO_URL}"
+                    sh 'git checkout jenkins && git pull'
                   }
                   dir("${REPO_DIR}/Ansible/AWS") {
                     sh 'ansible-playbook docker-compose_up_nodejs.yml -e host_group=green_tg'
@@ -73,7 +73,7 @@ pipeline {
             stage('Run on all blue-tg nodes') {
               steps {
                   dir("${REPO_DIR}") {
-                    git branch: 'jenkins', url: "${REPO_URL}"
+                    sh 'git checkout jenkins && git pull'
                   }
                   dir("${REPO_DIR}/Ansible/AWS") {
                     sh 'ansible-playbook docker-compose_up_nodejs.yml -e host_group=blue_tg'
