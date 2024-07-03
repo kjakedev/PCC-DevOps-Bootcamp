@@ -42,11 +42,11 @@ pipeline {
                     git branch: 'jenkins', url: "${REPO_URL}"
                   }
                   dir("${REPO_DIR}/Ansible/AWS") {
-                    sh '''
-                        su - ec2-user -c "ansible-playbook -i inventory blue_green_deploy.yml \
-                            --extra-vars 'host_group=green_tg'"
-                    '''
-                  }
+                    sh """
+                        export PATH=\$PATH:/var/lib/jenkins/.local/bin
+                        ansible-playbook ${REPO_DIR}/Ansible/AWS/blue_green_deploy.yaml -e host_group=green_tg
+                    """
+                }
               }
             }
           }
@@ -79,11 +79,11 @@ pipeline {
                     git branch: 'jenkins', url: "${REPO_URL}"
                   }
                   dir("${REPO_DIR}/Ansible/AWS") {
-                    sh '''
-                        su - ec2-user -c "ansible-playbook -i inventory blue_green_deploy.yml \
-                            --extra-vars 'host_group=blue_tg'"
-                    '''
-                  }
+                    sh """
+                        export PATH=\$PATH:/var/lib/jenkins/.local/bin
+                        ansible-playbook ${REPO_DIR}/Ansible/AWS/blue_green_deploy.yaml -e host_group=blue_tg
+                    """
+                }
               }
             }
           }
