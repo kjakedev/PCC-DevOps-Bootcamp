@@ -8,7 +8,7 @@ pipeline {
     blueARN = 'arn:aws:elasticloadbalancing:us-east-1:773314055569:targetgroup/blue-tg/fda570ba9fa0ba4b'
     greenARN = 'arn:aws:elasticloadbalancing:us-east-1:773314055569:targetgroup/green-tg/e41e1918562904c9'
     REPO_URL = 'https://github.com/kjakedev/PCC-DevOps-Bootcamp'
-    REPO_DIR = '/home/ec2-user/PCC-DevOps-Bootcamp'
+    REPO_DIR = '/tmp/PCC-DevOps-Bootcamp'
     AWS_CREDENTIALS_ID = 'aws-credentials'
   }
   stages {
