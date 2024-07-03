@@ -81,7 +81,7 @@ pipeline {
                   dir("${REPO_DIR}/Ansible/AWS") {
                     sh """
                         export PATH=\$PATH:/var/lib/jenkins/.local/bin
-                        ansible-playbook blue_green_deploy.yaml -e host_group=blue_tg
+                        ansible-playbook blue_green_deploy.yaml -e host_group=blue_tg -e GITHUB_REPO=${REPO_URL}
                     """
                 }
               }
