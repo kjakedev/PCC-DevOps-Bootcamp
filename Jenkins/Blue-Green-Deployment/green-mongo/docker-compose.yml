@@ -23,10 +23,11 @@ services:
   mongodb:
     image: mongo:5.0.27
     volumes:
-      - nodejs-todo-mongo_mongoddb-vol:/data/db
+      - mongoddb-vol:/data/db
     expose:
       - "27017"
 
 volumes:
   mongoddb-vol:
-    external: false
+    driver: local
+    name: mongoddb-vol
