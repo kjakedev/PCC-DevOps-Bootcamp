@@ -29,5 +29,4 @@ services:
 
 volumes:
   mongoddb-vol:
-    driver: local
-    name: mongoddb-vol
+    external: false

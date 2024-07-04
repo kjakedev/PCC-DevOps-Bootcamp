@@ -44,5 +44,4 @@ services:
 
 volumes:
   mysqldb-vol:
-    driver: local
-    name: mysqldb-vol
+    external: false
