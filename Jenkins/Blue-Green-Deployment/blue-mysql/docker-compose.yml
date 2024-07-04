@@ -2,7 +2,7 @@ name: nodejs-todo-mysql
 services:
   nodejs-todo-mysql:
     restart: always
-    build: ../../../NodeJS/ToDoNodeJS-MySQL
+    build: .
     environment:
       - DB_HOST=mysql-db
       - DB_USER=test

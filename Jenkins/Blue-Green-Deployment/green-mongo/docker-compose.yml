@@ -2,7 +2,7 @@ name: nodejs-todo-mongo
 services:
   nodejs-todo-mongo:
     restart: always
-    build: ../../../NodeJS/ToDoNodeJS-MongoDB
+    build: .
     environment:
       - DB_URL=mongodb
       - DB_NAME=test
