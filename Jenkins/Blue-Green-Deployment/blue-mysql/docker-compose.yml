@@ -38,7 +38,7 @@ services:
     expose:
       - "3306"
     volumes:
-      - mysqldb-vol:/var/lib/mysql
+      - nodejs-todo-mysql_mysqldb-vol:/var/lib/mysql
       - ./init.sql:/data/application/init.sql
     command: --mysql_native_password=ON --init-file /data/application/init.sql
 

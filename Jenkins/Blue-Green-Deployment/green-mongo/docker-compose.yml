@@ -23,7 +23,7 @@ services:
   mongodb:
     image: mongo:5.0.27
     volumes:
-      - mongoddb-vol:/data/db
+      - nodejs-todo-mongo_mongoddb-vol:/data/db
     expose:
       - "27017"
 
