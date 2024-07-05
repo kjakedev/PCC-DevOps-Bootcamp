@@ -45,7 +45,7 @@ Resources:
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: Public Subnet 1
+          Value: blue-green-subnet-1a
 
   # Public Subnet 2
   PublicSubnet2:
@@ -57,7 +57,7 @@ Resources:
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: Public Subnet 2
+          Value: blue-green-subnet-1b
 
   # Route Table for Public Subnets
   PublicRouteTable:
