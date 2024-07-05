@@ -7,7 +7,7 @@ resource "aws_s3_bucket" "terraform_state" {
   bucket = "tfstate-${random_string.bucket_name.result}"
      
   lifecycle {
-    prevent_destroy = true
+    prevent_destroy = false
   }
 }
 
