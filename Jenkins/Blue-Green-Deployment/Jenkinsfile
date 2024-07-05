@@ -1,0 +1,95 @@
+pipeline {
+  agent any
+  parameters {
+    choice (name: 'chooseNode', choices: ['Green', 'Blue'], description: 'Choose which Environment to Deploy: ')
+  }
+  environment {
+    // TODO: Replace with the correct values according to your provisioned setup.
+    listenerARN = '<your listener ARN>'
+    blueARN = '<blue_tg target group ARN>'
+    greenARN = '<green_tg target group ARN>'
+    REPO_URL = 'https://github.com/<your github username>/PCC-DevOps-Bootcamp'
+    REPO_DIR = '/tmp/PCC-DevOps-Bootcamp'
+    AWS_CREDENTIALS_ID = 'aws-credentials'
+  }
+  stages {
+    stage('Deployment Started') {
+      parallel {
+        stage('Green') {
+          when {
+            expression {
+              params.chooseNode == 'Green'
+            }
+          }
+          stages {
+            stage('Offloading Green') {
+              steps {
+                withCredentials([
+                  usernamePassword(
+                    credentialsId: "${AWS_CREDENTIALS_ID}",
+                    usernameVariable: 'AWS_ACCESS_KEY_ID',
+                    passwordVariable: 'AWS_SECRET_ACCESS_KEY'
+                  )
+                ]) {
+                  sh """
+                    AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} aws elbv2 modify-listener --listener-arn ${listenerARN} --default-actions '[{"Type": "forward","Order": 1,"ForwardConfig": {"TargetGroups": [{"TargetGroupArn": "${greenARN}", "Weight": 1 },{"TargetGroupArn": "${blueARN}", "Weight": 0 }],"TargetGroupStickinessConfig": {"Enabled": true,"DurationSeconds": 1}}}]'
+                  """
+                }
+              }
+            }
+            stage('Run on all green-tg nodes') {
+              steps {
+                  dir("${REPO_DIR}") {
+                    git url: "${REPO_URL}"
+                  }
+                  dir("${REPO_DIR}/Ansible/AWS") {
+                    sh """
+                        export PATH=\$PATH:/var/lib/jenkins/.local/bin
+                        ansible-playbook blue_green_deploy.yaml -e host_group=green_tg -e GITHUB_REPO=${REPO_URL}
+                    """
+                }
+              }
+            }
+          }
+        }
+        stage('Blue') {
+          when {
+            expression {
+              params.chooseNode == 'Blue'
+            }
+          }
+          stages {
+            stage('Offloading Blue') {
+              steps {
+                withCredentials([
+                  usernamePassword(
+                    credentialsId: "${AWS_CREDENTIALS_ID}",
+                    usernameVariable: 'AWS_ACCESS_KEY_ID',
+                    passwordVariable: 'AWS_SECRET_ACCESS_KEY'
+                  )
+                ]) {
+                  sh """
+                    AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} aws elbv2 modify-listener --listener-arn ${listenerARN} --default-actions '[{"Type": "forward","Order": 1,"ForwardConfig": {"TargetGroups": [{"TargetGroupArn": "${greenARN}", "Weight": 0 },{"TargetGroupArn": "${blueARN}", "Weight": 1 }],"TargetGroupStickinessConfig": {"Enabled": true,"DurationSeconds": 1}}}]'
+                  """
+                }
+              }
+            }
+            stage('Run on all blue-tg nodes') {
+              steps {
+                  dir("${REPO_DIR}") {
+                    git url: "${REPO_URL}"
+                  }
+                  dir("${REPO_DIR}/Ansible/AWS") {
+                    sh """
+                        export PATH=\$PATH:/var/lib/jenkins/.local/bin
+                        ansible-playbook blue_green_deploy.yaml -e host_group=blue_tg -e GITHUB_REPO=${REPO_URL}
+                    """
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

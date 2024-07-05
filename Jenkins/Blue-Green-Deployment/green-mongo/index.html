@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link
+      href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+      rel="stylesheet"
+      id="bootstrap-css"
+    />
+    <title>NodeJS Mongodb Todo</title>
+  </head>
+  <style>
+    .footer {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      padding: 1rem;
+      background-color: #efefef;
+      text-align: center;
+    }
+    ::placeholder {
+      text-overflow: ellipsis;
+    }
+  </style>
+
+  <body>
+    <section class="title-banner py-4 bg-success text-white" id="title-banner">
+      <div class="container">
+        <div class="row">
+          <h4>NodeJS Mongodb Todo</h4>
+        </div>
+      </div>
+    </section>
+    <div class="container">
+      <div class="row">
+        <div class="col-sm">
+          <div class="form-group p-3">
+            <input
+              id="newItem"
+              type="text"
+              name="newtask"
+              placeholder="Add new todo Item"
+            />
+          </div>
+        </div>
+      </div>
+      <div class="container">
+        <div class="row">
+          <div class="col-sm">
+            <div class="input-group mt-3 mb-3">
+              <button id="addTask" class="btn btn-dark btn-block">
+                Add Task
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mt-3">
+        <h5 class="card-header h5">To do List</h5>
+        <div class="todo-list card-body">
+          <ul id="displayTodoItems" class="list-unstyled"></ul>
+          <button id="completeItems" class="btn btn-dark btn-block">
+            Complete
+          </button>
+        </div>
+      </div>
+      <div class="card mt-3 mb-3">
+        <h5 class="card-header h5">Complete</h5>
+        <div class="card-body">
+          <ul class="card-text list-unstyled" id="displayCompleteItems"></ul>
+        </div>
+      </div>
+    </div>
+    <footer>
+      This application is running on container/server id:
+      <strong>{{hostname}}</strong>.
+    </footer>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="./client-side.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  </body>
+</html>

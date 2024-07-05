@@ -1,0 +1,32 @@
+name: nodejs-todo-mongo
+services:
+  nodejs-todo-mongo:
+    restart: always
+    build: .
+    environment:
+      - DB_URL=mongodb
+      - DB_NAME=test
+    links:
+      - mongodb
+    expose:
+      - "3000"
+
+  reverse-proxy:
+    image: nginx:latest
+    links:
+      - nodejs-todo-mongo
+    volumes:
+      - ./nodejs-todo.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "80:80"
+
+  mongodb:
+    image: mongo:5.0.27
+    volumes:
+      - mongoddb-vol:/data/db
+    expose:
+      - "27017"
+
+volumes:
+  mongoddb-vol:
+    external: false

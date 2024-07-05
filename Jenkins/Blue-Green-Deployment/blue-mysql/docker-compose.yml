@@ -1,0 +1,46 @@
+name: nodejs-todo-mysql
+services:
+  nodejs-todo-mysql:
+    restart: always
+    build: .
+    environment:
+      - DB_HOST=mysql-db
+      - DB_USER=test
+      - DB_PASSWORD=test
+      - DB_NAME=test
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+        restart: true
+    expose:
+      - "3000"
+
+  reverse-proxy:
+    image: nginx:latest
+    links:
+      - nodejs-todo-mysql
+    volumes:
+      - ./nodejs-todo.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "80:80"
+
+  mysql-db:
+    image: mysql:lts
+    environment:
+      - MYSQL_ROOT_PASSWORD=test
+      - MYSQL_USER=test
+      - MYSQL_PASSWORD=test
+      - MYSQL_DATABASE=test
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+    expose:
+      - "3306"
+    volumes:
+      - mysqldb-vol:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/1.sql
+    command: --mysql_native_password=ON
+
+volumes:
+  mysqldb-vol:

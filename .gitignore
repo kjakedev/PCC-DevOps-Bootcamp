@@ -6,3 +6,5 @@ dist
 venv
 .*
 !.dockerignore
+__pycache__
+tmp

@@ -1,0 +1,18 @@
+# TODO: Change all the values to its correct values from your setup.
+[aws_nodejs_ec2]
+nodejs-mysql-us-east-1a ansible_host=<public ip address of nodejs-mysql-us-east-1a>
+nodejs-mysql-us-east-1b ansible_host=<public ip address of nodejs-mysql-us-east-1b>
+nodejs-mongodb-us-east-1a ansible_host=<public ip address of nodejs-mongodb-us-east-1a>
+nodejs-mongodb-us-east-1b ansible_host=<public ip address of nodejs-mongodb-us-east-1b>
+
+[blue_tg]
+nodejs-mysql-us-east-1a ansible_host=<public ip address of nodejs-mysql-us-east-1a>
+nodejs-mysql-us-east-1b ansible_host=<public ip address of nodejs-mysql-us-east-1b>
+
+[green_tg]
+nodejs-mongodb-us-east-1a ansible_host=<public ip address of nodejs-mongodb-us-east-1a>
+nodejs-mongodb-us-east-1b ansible_host=<public ip address of nodejs-mongodb-us-east-1b>
+[aws_nodejs_ec2:vars]
+# ansible_ssh_private_key_file=<path of your private key>
+ansible_ssh_private_key_file=~/devops-bootcamp.pem
+ansible_user=ec2-user
