@@ -19,8 +19,7 @@
             join(' ') +
             kubeadm_init.stdout_lines |
             select('search', '--discovery-token-ca-cert-hash') |
-            first |
-            regex_replace('\\n|\\t|\\\\', '')
+            first            
           }}
 
     - name: Join command

@@ -18,5 +18,5 @@
         group: ubuntu
 
     - name: Join worker node to the cluster
-      shell: "{{ hostvars['master-node'].join_command }}"
+      shell: "{{ hostvars['master-node'].join_command | regex_replace('\\n|\\t|\\\\', '') }}"
 
