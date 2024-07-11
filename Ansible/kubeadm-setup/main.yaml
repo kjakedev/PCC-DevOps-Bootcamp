@@ -109,11 +109,11 @@
             --set image-endpoint=unix:///run/containerd/containerd.sock
 
 
-    - name: Configure weave network in master node
-      include_tasks: weave_master_setup.yaml
+- name: Configure weave network in master node
+  import_playbook: weave_master_setup.yaml
 
-    - name: Configure weave network in master node
-      include_tasks: weave_worker_setup.yaml
+- name: Configure weave network in master node
+  import_playbook: weave_worker_setup.yaml
 
 
       
