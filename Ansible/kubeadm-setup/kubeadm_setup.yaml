@@ -3,9 +3,6 @@
   hosts: all
   become: true
 
-  vars:
-    kubernetes_version: "1.23.17"
-
   tasks:
     - name: Update apt package index
       apt:
@@ -39,8 +36,33 @@
           net.bridge.bridge-nf-call-ip6tables = 1
           net.ipv4.ip_forward                 = 1
     
-    - name: Install container runtime - Docker
-      include_tasks: docker_install.yaml
+    - name: Apply sysctl parameters without reboot
+      shell: sysctl --system
+
+    - name: Install containerd
+      apt:
+        name: containerd
+        state: present
+
+    - name: Create containerd configuration directory
+      file:
+        path: /etc/containerd
+        state: directory
+
+    - name: Generate default containerd configuration
+      shell: containerd config default > /etc/containerd/config.toml
+
+    - name: Set SystemdCgroup to true
+      replace:
+        path: /etc/containerd/config.toml
+        regexp: 'SystemdCgroup = false'
+        replace: 'SystemdCgroup = true'
+
+    - name: Restart containerd
+      systemd:
+        name: containerd
+        state: restarted
+        enabled: yes
 
     - name: Download Google Cloud public signing key
       apt_key:
@@ -49,7 +71,7 @@
 
     - name: Install k8s apt sources
       apt_repository:
-        repo: deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.asc] https://pkgs.k8s.io/core:/stable:/v{{ kubernetes_version }}/deb/ /
+        repo: deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.asc] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /
         state: present
 
     - name: Update apt package index
@@ -71,7 +93,14 @@
           - kubeadm
           - kubectl
         state: hold
-    
+
+    - name: Configure crictl
+      shell: |
+        crictl config \
+            --set runtime-endpoint=unix:///run/containerd/containerd.sock \
+            --set image-endpoint=unix:///run/containerd/containerd.sock
+
+
     - name: Configure weave network
       include_tasks: weave_net_setup.yaml
 

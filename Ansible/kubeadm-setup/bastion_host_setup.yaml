@@ -3,9 +3,6 @@
   hosts: localhost
   become: true
 
-  vars:
-    kubernetes_version: "1.23.17"
-
   tasks:
     - name: Update apt package index
       apt:
@@ -26,7 +23,7 @@
 
     - name: Install k8s apt sources
       apt_repository:
-        repo: deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.asc] https://pkgs.k8s.io/core:/stable:/v{{ kubernetes_version }}/deb/ /
+        repo: deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.asc] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /
         state: present
 
 
