@@ -1,10 +1,10 @@
 # TODO: Change all the values to its correct values from your setup.
 [master]
-master-node ansible_host=172.31.14.48
+master-node
 
 [workers]
-worker-node01 ansible_host=172.31.41.247
-worker-node02 ansible_host=172.31.84.116
+worker-node01
+worker-node02
 
 [all:vars]
 # ansible_ssh_private_key_file=<path of your private key in bastion_host>
