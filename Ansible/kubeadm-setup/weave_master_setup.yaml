@@ -17,10 +17,10 @@
             select('search', 'kubeadm join') |
             list |
             join(' ') +
-            ' --discovery-token-ca-cert-hash sha256:' +
             kubeadm_init.stdout_lines |
             select('search', '--discovery-token-ca-cert-hash') |
-            first
+            first |
+            regex_replace('\\n|\\t|\\\\', '')
           }}
 
     - name: Join command
@@ -34,7 +34,3 @@
       slurp:
         src: /etc/kubernetes/admin.conf
       register: kubeconfig_content
-
-    - name: kubeconfig for workers
-      debug:
-        msg: "{{ kubeconfig_content }}"
