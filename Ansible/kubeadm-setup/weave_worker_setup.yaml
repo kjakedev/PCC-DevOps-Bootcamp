@@ -11,11 +11,11 @@
 
     - name: Copy kubeconfig content from master
       copy:
-        content: "{{ master_node_registers.kubeconfig_content }}"
+        content: "{{ hostvars['master-node'].kubeconfig_content }}"
         dest: /home/ubuntu/.kube/config
         owner: ubuntu
         group: ubuntu
 
     - name: Join worker node to the cluster
-      shell: "{{ master_node_registers.join_command }}"
+      shell: "{{ hostvars['master-node'].join_command }}"
 
