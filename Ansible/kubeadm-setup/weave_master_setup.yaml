@@ -11,7 +11,17 @@
 
     - name: Copy join command to a fact
       set_fact:
-        join_command: "{{ kubeadm_init.stdout_lines | select('search', 'kubeadm join') | list | join(' ') }}"
+        join_command: >
+          {{
+            kubeadm_init.stdout_lines |
+            select('search', 'kubeadm join') |
+            list |
+            join(' ') +
+            ' --discovery-token-ca-cert-hash sha256:' +
+            kubeadm_init.stdout_lines |
+            select('search', '--discovery-token-ca-cert-hash') |
+            first
+          }}
 
     - name: Join command
       debug:
