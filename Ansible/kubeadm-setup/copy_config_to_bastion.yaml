@@ -1,0 +1,18 @@
+---
+- name: Copy kubeconfig to bastion host
+  hosts: localhost
+  become: yes
+  tasks:
+    - name: Create .kube directory
+      file:
+        path: /home/ubuntu/.kube
+        state: directory
+        owner: ubuntu
+        group: ubuntu
+        
+    - name: Copy kubeconfig content from master
+      copy:
+        content: "{{ hostvars['master-node'].kubeconfig_base64.content | b64decode }}"
+        dest: /home/ubuntu/.kube/config
+        owner: ubuntu
+        group: ubuntu
