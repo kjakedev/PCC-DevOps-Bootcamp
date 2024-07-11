@@ -123,7 +123,7 @@ resource "aws_security_group" "workernode" {
     protocol    = "tcp"
     cidr_blocks = [
       "${chomp(data.http.my_ip.response_body)}/32"
-      ]
+    ]
     security_groups = [
       aws_security_group.bastion_host.id
     ]
