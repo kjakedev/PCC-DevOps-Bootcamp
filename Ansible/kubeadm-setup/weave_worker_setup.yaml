@@ -17,6 +17,10 @@
         owner: ubuntu
         group: ubuntu
 
+    - name: Build the filtered command
+      set_fact:
+        filtered_command: "{{ hostvars['master-node'].join_command | regex_replace('\n|\t|\\', '') }}"
+
     - name: Join worker node to the cluster
-      shell: "{{ hostvars['master-node'].join_command | regex_replace('\\n|\\t|\\\\', '') }}"
+      shell: "{{ filtered_command }}"
 
