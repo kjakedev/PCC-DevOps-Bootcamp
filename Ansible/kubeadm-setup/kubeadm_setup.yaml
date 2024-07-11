@@ -93,7 +93,7 @@
           - kubelet
           - kubeadm
           - kubectl
-        state: hold
+        selection: hold
 
     - name: Configure crictl
       shell: |
