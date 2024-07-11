@@ -9,9 +9,9 @@
         owner: ubuntu
         group: ubuntu
 
-    - name: Copy kubeconfig content from controlplane
+    - name: Copy kubeconfig content from master
       copy:
-        content: "{{ hostvars['controlplane'].kubeconfig_base64 | b64decode }}"
+        content: "{{ hostvars['master'].kubeconfig_base64 | b64decode }}"
         dest: /home/ubuntu/.kube/config
         owner: ubuntu
         group: ubuntu
