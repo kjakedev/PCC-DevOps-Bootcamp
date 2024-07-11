@@ -86,7 +86,15 @@
           - kubeadm
           - kubectl
         state: present
-  
+
+    - name: Hold kubelet, kubeadm, and kubectl packages
+      dpkg_selections:
+        name:
+          - kubelet
+          - kubeadm
+          - kubectl
+        state: hold
+
     - name: Configure crictl
       shell: |
         crictl config \

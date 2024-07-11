@@ -36,3 +36,9 @@
         name:
           - kubectl
         state: present
+
+    - name: Hold kubelet, kubeadm, and kubectl packages
+      dpkg_selections:
+        name:
+          - kubectl
+        state: hold
