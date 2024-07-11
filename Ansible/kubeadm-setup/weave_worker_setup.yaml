@@ -1,6 +1,7 @@
 ---
 - name: Copy kubeconfig to worker node
   hosts: workers
+  become: yes
   tasks:
     - name: Create .kube directory
       file:
