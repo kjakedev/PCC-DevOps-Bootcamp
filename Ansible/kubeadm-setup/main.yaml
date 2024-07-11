@@ -87,12 +87,19 @@
           - kubectl
         state: present
 
-    - name: Hold kubelet, kubeadm, and kubectl packages
+    - name: Hold kubelet
       dpkg_selections:
-        name:
-          - kubelet
-          - kubeadm
-          - kubectl
+        name: kubelet
+        selection: hold
+    
+    - name: Hold kubeadm
+      dpkg_selections:
+        name: kubeadm
+        selection: hold
+
+    - name: Hold kubectl
+      dpkg_selections:
+        name: kubectl
         selection: hold
 
     - name: Configure crictl
@@ -102,8 +109,11 @@
             --set image-endpoint=unix:///run/containerd/containerd.sock
 
 
-    - name: Configure weave network
-      include_tasks: weave_net_setup.yaml
+    - name: Configure weave network in master node
+      include_tasks: weave_master_setup.yaml
+
+    - name: Configure weave network in master node
+      include_tasks: weave_worker_setup.yaml
 
 
       

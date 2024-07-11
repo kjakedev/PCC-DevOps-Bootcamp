@@ -1,0 +1,21 @@
+---
+- name: Copy kubeconfig to worker node
+  hosts: workers
+  tasks:
+    - name: Create .kube directory
+      file:
+        path: /home/ubuntu/.kube
+        state: directory
+        owner: ubuntu
+        group: ubuntu
+
+    - name: Copy kubeconfig content from controlplane
+      copy:
+        content: "{{ hostvars['controlplane'].kubeconfig_base64 | b64decode }}"
+        dest: /home/ubuntu/.kube/config
+        owner: ubuntu
+        group: ubuntu
+
+    - name: Join worker node to the cluster
+      shell: "{{ hostvars['master'].join_command }}"
+

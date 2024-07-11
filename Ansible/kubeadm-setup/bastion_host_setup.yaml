@@ -31,14 +31,13 @@
       apt:
         update_cache: yes
 
-    - name: Install kubelet, kubeadm, and kubectl
+    - name: Install kubectl
       apt:
         name:
           - kubectl
         state: present
 
-    - name: Hold kubelet, kubeadm, and kubectl packages
+    - name: Hold kubectl packages
       dpkg_selections:
-        name:
-          - kubectl
+        name: kubectl
         selection: hold
