@@ -34,7 +34,7 @@
     - name: Install kubelet, kubeadm, and kubectl
       apt:
         name:
-          - "kubectl={{ kubernetes_version }}"
+          - kubectl
         state: present
 
     - name: Hold kubelet, kubeadm, and kubectl packages
