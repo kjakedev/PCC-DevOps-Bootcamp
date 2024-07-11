@@ -32,4 +32,4 @@
     - name: Prepare kubeconfig for workers
       slurp:
         src: /etc/kubernetes/admin.conf
-      register: kubeconfig_content
+      register: kubeconfig_base64

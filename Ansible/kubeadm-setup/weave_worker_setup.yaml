@@ -12,14 +12,14 @@
 
     - name: Copy kubeconfig content from master
       copy:
-        content: "{{ hostvars['master-node'].kubeconfig_content }}"
+        content: "{{ hostvars['master-node'].kubeconfig_base64 | b64decode }}"
         dest: /home/ubuntu/.kube/config
         owner: ubuntu
         group: ubuntu
 
     - name: Build the filtered command
       set_fact:
-        filtered_command: "{{ hostvars['master-node'].join_command | regex_replace('\n|\t|\\', '') }}"
+        filtered_command: "{{ hostvars['master-node'].join_command | regex_replace('\n|\t|\\', ' ') }}"
 
     - name: Join worker node to the cluster
       shell: "{{ filtered_command }}"
