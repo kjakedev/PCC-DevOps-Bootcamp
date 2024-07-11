@@ -43,15 +43,14 @@
       include_tasks: docker_install.yaml
 
     - name: Download Google Cloud public signing key
-      shell: curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | gpg --dearmor -o /etc/apt/keyrings/kubernetes-archive-keyring.gpg
-      args:
-        creates: /etc/apt/keyrings/kubernetes-archive-keyring.gpg
+      apt_key:
+        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        state: present
 
-    - name: Add Kubernetes apt repository
-      copy:
-        dest: /etc/apt/sources.list.d/kubernetes.list
-        content: |
-          deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main
+    - name: Install k8s apt sources
+      apt_repository:
+        repo: deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.asc] https://pkgs.k8s.io/core:/stable:/v{{ kubernetes_version }}/deb/ /
+        state: present
 
     - name: Update apt package index
       apt:
