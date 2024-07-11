@@ -42,5 +42,6 @@
 
     - name: Hold kubelet, kubeadm, and kubectl packages
       apt:
+        name:
           - kubectl
         state: hold
