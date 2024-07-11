@@ -13,6 +13,10 @@
       set_fact:
         join_command: "{{ kubeadm_init.stdout_lines | select('search', 'kubeadm join') | list | join(' ') }}"
 
+    - name: Join command
+      debug:
+        msg: "{{ join_command }}"
+
     - name: Apply Weave Net network plugin
       shell: kubectl --kubeconfig /etc/kubernetes/admin.conf apply -f "{{ weave_net_url }}"
 
@@ -21,6 +25,6 @@
         src: /etc/kubernetes/admin.conf
       register: kubeconfig_content
 
-    - name: Set kubeconfig content as a fact
-      set_fact:
-        kubeconfig_base64: "{{ kubeconfig_content.content }}"
+    - name: kubeconfig for workers
+      debug:
+        msg: "{{ kubeconfig_content }}"
