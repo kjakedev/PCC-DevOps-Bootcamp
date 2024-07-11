@@ -16,9 +16,10 @@
           - curl
         state: present
 
-    - name: Download Google Cloud public signing key
+    - name: Download kubernetes public signing key
       apt_key:
-        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        url: https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key
+        keyring: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
         state: present
 
     - name: Install k8s apt sources
@@ -35,9 +36,3 @@
         name:
           - kubectl
         state: present
-
-    - name: Hold kubelet, kubeadm, and kubectl packages
-      apt:
-        name:
-          - kubectl
-        state: hold
