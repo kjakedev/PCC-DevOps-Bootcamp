@@ -115,5 +115,8 @@
 - name: Configure weave network in master node
   import_playbook: weave_worker_setup.yaml
 
+- name: Copy kubeconfig to bastion_host
+  import_playbook: copy_config_to_bastion.yaml
+
 
       
