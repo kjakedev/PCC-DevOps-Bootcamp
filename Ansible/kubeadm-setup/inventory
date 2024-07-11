@@ -1,0 +1,15 @@
+# TODO: Change all the values to its correct values from your setup.
+[master]
+master-node ansible_host=<public ip address of nodejs-mysql-us-east-1a>
+
+[workers]
+worker-node01 ansible_host=<public ip address of nodejs-mysql-us-east-1a>
+worker-node02 ansible_host=<public ip address of nodejs-mysql-us-east-1b>
+
+[bastion]
+bastion_host
+
+[all:vars]
+# ansible_ssh_private_key_file=<path of your private key in bastion_host>
+ansible_ssh_private_key_file=/home/ubuntu/.ssh/id_rsa
+ansible_user=ubuntu

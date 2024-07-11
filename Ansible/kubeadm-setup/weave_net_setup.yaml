@@ -1,0 +1,47 @@
+---
+- name: Setup Kubernetes master node and install Weave Net
+  hosts: master
+  become: true
+  vars:
+    weave_net_url: "https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s-1.11.yaml"
+  tasks:
+    - name: Initialize Kubernetes master node
+      shell: kubeadm init
+      register: kubeadm_init
+
+    - name: Copy join command to a fact
+      set_fact:
+        join_command: "{{ kubeadm_init.stdout_lines | select('search', 'kubeadm join') | list | join(' ') }}"
+
+    - name: Apply Weave Net network plugin
+      shell: kubectl --kubeconfig /etc/kubernetes/admin.conf apply -f "{{ weave_net_url }}"
+
+    - name: Prepare kubeconfig for workers
+      slurp:
+        src: /etc/kubernetes/admin.conf
+      register: kubeconfig_content
+
+    - name: Set kubeconfig content as a fact
+      set_fact:
+        kubeconfig_base64: "{{ kubeconfig_content.content }}"
+
+- name: Copy kubeconfig to worker node
+  hosts: workers
+  tasks:
+    - name: Create .kube directory
+      file:
+        path: /home/ubuntu/.kube
+        state: directory
+        owner: ubuntu
+        group: ubuntu
+
+    - name: Copy kubeconfig content from controlplane
+      copy:
+        content: "{{ hostvars['controlplane'].kubeconfig_base64 | b64decode }}"
+        dest: /home/ubuntu/.kube/config
+        owner: ubuntu
+        group: ubuntu
+
+    - name: Join worker node to the cluster
+      shell: "{{ hostvars['master'].join_command }}"
+
