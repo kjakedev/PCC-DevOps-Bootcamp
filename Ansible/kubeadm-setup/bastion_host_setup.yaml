@@ -4,7 +4,7 @@
   become: true
 
   vars:
-    kubernetes_version: "1.24.0-00"
+    kubernetes_version: "1.23.17"
 
   tasks:
     - name: Update apt package index
