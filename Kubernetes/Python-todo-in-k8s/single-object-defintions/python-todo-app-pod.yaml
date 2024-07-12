@@ -1,0 +1,17 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: python-todo-app
+  labels:
+    app: python-todo-demo
+    type: app
+spec:
+  containers:
+    - name: python-todo-app
+      image: kjakepcc/python-sample-todo
+      ports:
+        containerPort: 5000
+      env:
+        - name: DB_URL
+          value: "mysql://test:test@mysql-db/test"
