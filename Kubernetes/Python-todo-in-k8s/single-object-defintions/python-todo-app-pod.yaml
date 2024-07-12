@@ -4,14 +4,14 @@ kind: Pod
 metadata:
   name: python-todo-app
   labels:
-    app: python-todo-demo
-    type: app
+    app: python-todo-app-pod
+    type: python-todo-demo
 spec:
   containers:
     - name: python-todo-app
       image: kjakepcc/python-sample-todo
       ports:
-        containerPort: 5000
+        - containerPort: 5000
       env:
         - name: DB_URL
           value: "mysql://test:test@mysql-db/test"

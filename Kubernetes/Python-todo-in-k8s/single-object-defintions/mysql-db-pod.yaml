@@ -4,14 +4,14 @@ kind: Pod
 metadata:
   name: mysql-db
   labels:
-    app: python-todo-demo
-    type: app
+    app: mysql-db-pod
+    type: python-todo-demo
 spec:
   containers:
     - name: mysql-db
       image: mysql
       ports:
-        containerPort: 3306
+        - containerPort: 3306
       env:
         - name: MYSQL_ROOT_PASSWORD
           value: "test"
