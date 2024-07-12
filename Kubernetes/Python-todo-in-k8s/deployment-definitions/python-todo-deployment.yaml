@@ -39,5 +39,5 @@ spec:
       port: 5000
       nodePort: 30005
   selector:
-    app: python-todo-app-pod
-    type: python-todo-demo
+    name: python-todo-app-pod
+    app: python-todo-demo

@@ -43,5 +43,5 @@ spec:
     - targetPort: 3306
       port: 3306
   selector:
-    app: mysql-db-pod
-    type: python-todo-demo
+    name: mysql-db-pod
+    app: python-todo-demo
