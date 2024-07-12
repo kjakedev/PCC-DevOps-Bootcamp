@@ -1,0 +1,47 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-db
+  labels:
+    name: mysql-db-deployment
+    app: python-todo-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: mysql-db-pod
+      app: python-todo-demo
+  template:
+    metadata:
+      name: mysql-db
+      labels:
+        app: mysql-db-pod
+        type: python-todo-demo
+    spec:
+      containers:
+        - name: mysql-db
+          image: mysql
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: "test"
+            - name: MYSQL_USER
+              value: "test"
+            - name: MYSQL_PASSWORD
+              value: "test"
+            - name: MYSQL_DATABASE
+              value: "test"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-db
+spec:
+  ports:
+    - targetPort: 3306
+      port: 3306
+  selector:
+    app: mysql-db-pod
+    type: python-todo-demo

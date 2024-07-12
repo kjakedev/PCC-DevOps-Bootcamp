@@ -1,0 +1,43 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-db
+  labels:
+    name: mysql-db-deployment
+    app: python-todo-demo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      name: mysql-db-pod
+      app: python-todo-demo
+  template:
+    metadata:
+      name: python-todo-app
+      labels:
+        app: python-todo-app-pod
+        type: python-todo-demo
+    spec:
+      containers:
+        - name: python-todo-app
+          image: kjakepcc/python-sample-todo
+          ports:
+            - containerPort: 5000
+          env:
+            - name: DB_URL
+              value: "mysql://test:test@mysql-db/test"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: python-todo-app
+spec:
+  type: NodePort
+  ports:
+    - targetPort: 5000
+      port: 5000
+      nodePort: 30005
+  selector:
+    app: python-todo-app-pod
+    type: python-todo-demo
