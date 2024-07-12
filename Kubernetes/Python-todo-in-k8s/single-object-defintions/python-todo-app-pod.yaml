@@ -4,8 +4,8 @@ kind: Pod
 metadata:
   name: python-todo-app
   labels:
-    app: python-todo-app-pod
-    type: python-todo-demo
+    name: python-todo-app-pod
+    app: python-todo-demo
 spec:
   containers:
     - name: python-todo-app

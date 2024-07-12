@@ -16,8 +16,8 @@ spec:
     metadata:
       name: mysql-db
       labels:
-        app: mysql-db-pod
-        type: python-todo-demo
+        name: mysql-db-pod
+        app: python-todo-demo
     spec:
       containers:
         - name: mysql-db
