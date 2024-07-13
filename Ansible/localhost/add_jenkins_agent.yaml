@@ -1,15 +1,15 @@
 ---
-- name: Install Java on aws_nodejs_ec2
-  hosts: aws_nodejs_ec2
+- name: Install Java on bastion_host
+  hosts: bastion_host
   become: true
   tasks:
     - name: Update package cache (recommended before installing)
-      dnf:
+      apt:
         update_cache: yes
 
     - name: Install java-17-amazon-corretto package
-      dnf:
-        name: java-17-amazon-corretto
+      apt:
+        name: openjdk-11-jdk
         state: present
 
 - name: Add Jenkins agents
@@ -17,33 +17,33 @@
   # TODO: Change all the values to its correct values from your setup.
   vars:
     jenkins_url: "http://<jenkins-demo public ip or dns>:8080"
-    jenkins_user: "< your_jenkins_username >"
-    jenkins_token: "< your_jenkins_api_token >"
+    jenkins_user: "pcc-devops"
+    jenkins_token: "115a9dc50e7693500b175128f261b5653d"
     jenkins_cli_path: "~/jenkins-cli.jar"
     agents:
-      - name: "nodejs-mysql-us-east-1a"
-        host: "<public ip address of nodejs-mysql-us-east-1a>"
-      - name: "nodejs-mysql-us-east-1b"
-        host: "<public ip address of nodejs-mysql-us-east-1b>"
-      - name: "nodejs-mongodb-us-east-1a"
-        host: "<public ip address of nodejs-mongodb-us-east-1a>"
-      - name: "nodejs-mongodb-us-east-1b"
-        host: "<public ip address of nodejs-mongodb-us-east-1a>"
+      - name: "bastion_host"
+        host: "<public ip address of bastion_host>"
   tasks:
+    - name: Download Jenkins CLI
+      get_url:
+        url: "{{ jenkins_url }}/jnlpJars/jenkins-cli.jar"
+        dest: /home/pcc-devops/jenkins-cli.jar
+        mode: 0755
+
     - name: Generate agent XML configuration
       set_fact:
         agent_config: |
           <slave>
             <name>{{ item.name }}</name>
             <description></description>
-            <remoteFS>/home/ec2-user</remoteFS>
+            <remoteFS>/home/ubuntu</remoteFS>
             <numExecutors>1</numExecutors>
             <mode>NORMAL</mode>
             <retentionStrategy class="hudson.slaves.RetentionStrategy$Always"/>
             <launcher class="hudson.plugins.sshslaves.SSHLauncher" plugin="ssh-slaves@2.973.v0fa_8c0dea_f9f">
               <host>{{ item.host }}</host>
               <port>22</port>
-              <credentialsId>ec2-user</credentialsId>
+              <credentialsId>ubuntu</credentialsId>
               <launchTimeoutSeconds>60</launchTimeoutSeconds>
               <maxNumRetries>10</maxNumRetries>
               <retryWaitTime>15</retryWaitTime>
@@ -62,12 +62,8 @@
           </slave>
       loop: "{{ agents }}"
       vars:
-        label: "{{ 'blue-tg' if 'mysql' in item.name else 'green-tg' if 'mongodb' in item.name else '' }}"
+        label: "bastion_host"
       register: agent_configs
-
-    # - name: agent_configs
-    #   debug:
-    #     msg: "{{ agent_configs }}"
 
     - name: Create directory /tmp if it doesn't exist
       file:
