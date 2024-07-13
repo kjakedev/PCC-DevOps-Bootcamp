@@ -31,6 +31,9 @@ resource "aws_instance" "jenkins" {
                                 dnf install java-17-amazon-corretto -y
                                 yum install jenkins -y
                                 systemctl enable jenkins
+                                curl  https://jenkins-backup-pcc-devops.s3.amazonaws.com/jenkins_backup.tar.gz -o /tmp/jenkins_backup.tar.gz
+                                echo "11c45387d6371d0397d7b5609b06c1982a" > /tmp/pcc-devops-token
+                                tar -xzvf /tmp/jenkins_backup.tar.gz --strip-components=3 -C /var/lib/jenkins/
                                 systemctl start jenkins
                                 EOT
 
